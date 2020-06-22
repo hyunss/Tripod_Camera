@@ -26,6 +26,7 @@ import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -340,40 +341,41 @@ public class MainActivity extends AppCompatActivity {
             checkBox5 = (CheckBox) findViewById(R.id.check5);
 
             savebtn.setOnClickListener(new View.OnClickListener() {
+                private File file;
                 @Override
                 public void onClick(View v) {
                     if(checkBox0.isChecked()){
-                        checkBox0.setText("checked");
+
                     }
                     else {
                         checkBox0.setText("1번");
                     }
                     if(checkBox1.isChecked()){
-                        checkBox1.setText("checked");
+
                     }
                     else {
                         checkBox1.setText("2번");
                     }
                     if(checkBox2.isChecked()){
-                        checkBox2.setText("checked");
+
                     }
                     else {
                         checkBox2.setText("3번");
                     }
                     if(checkBox3.isChecked()){
-                        checkBox3.setText("checked");
+
                     }
                     else {
                         checkBox3.setText("4번");
                     }
                     if(checkBox4.isChecked()){
-                        checkBox4.setText("checked");
+
                     }
                     else {
                         checkBox4.setText("5번");
                     }
                     if(checkBox5.isChecked()){
-                        checkBox5.setText("checked");
+
                     }
                     else {
                         checkBox5.setText("6번");
