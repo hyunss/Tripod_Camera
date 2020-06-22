@@ -2,19 +2,19 @@ package com.example.tensorflowex
 
 import android.Manifest
 import android.app.Activity
+import android.app.ProgressDialog
 import android.bluetooth.BluetoothAdapter
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Matrix
 import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.util.Size
-import android.view.KeyEvent
-import android.view.Surface
-import android.view.TextureView
-import android.view.ViewGroup
+import android.view.*
 import android.widget.ImageButton
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.*
@@ -23,8 +23,12 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import app.akexorcist.bluetotohspp.library.BluetoothSPP
 import app.akexorcist.bluetotohspp.library.BluetoothState
-import app.akexorcist.bluetotohspp.library.DeviceList
+import java.io.DataOutputStream
 import java.io.File
+import java.io.FileInputStream
+import java.net.HttpURLConnection
+import java.net.MalformedURLException
+import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.Executors
@@ -32,10 +36,25 @@ import java.util.concurrent.Executors
 private const val REQUEST_CODE_PERMISSIONS = 10
 private lateinit var bt : BluetoothSPP
 // This is an array of all the permission specified in the manifest.
-private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
+private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA, Manifest.permission.ACCESS_NETWORK_STATE)
 
 class CameraActivity : AppCompatActivity(), LifecycleOwner{
     var count = 0
+
+    var messageText: TextView? = null
+    var serverResponseCode = 0
+    var dialog: ProgressDialog? = null
+    var upLoadServerUri: String? = null
+
+    //유니크한 단말 번호 >>> Android ID 사용
+    val android_id = Settings.Secure.getString(
+        this.contentResolver,
+        Settings.Secure.ANDROID_ID
+    )
+
+    /**********  File Path  *************/
+    val uploadFilePath = "/mnt/sdcard/DCIM/Camera/"
+    lateinit var uploadFileName:String // "20200520_155136.jpg"
 
     private lateinit var file : File
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,6 +62,13 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
         setContentView(R.layout.activity_camera)
 
         viewFinder = findViewById(R.id.view_finder1)
+        messageText = findViewById<View>(R.id.messageText) as TextView
+        messageText!!.text = android_id
+
+        /************* Php script path ****************/
+        upLoadServerUri = "http://192.168.31.139/project/upload.php"
+        // "http://192.168.112.38/project/upload.php";
+
 
         // Request camera permissions
         if (allPermissionsGranted()) {
@@ -63,6 +89,7 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
             Toast.makeText(applicationContext, "Bluetooth is not available", Toast.LENGTH_LONG).show()
             finish()
         }
+
         bt.setBluetoothConnectionListener(object:BluetoothSPP.BluetoothConnectionListener{
             override fun onDeviceDisconnected() {
                 Toast.makeText(
@@ -84,6 +111,7 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
             }
 
         })
+
         val btnConnect : ImageButton = findViewById(R.id.btnConnect)
         btnConnect.setOnClickListener{
             /*
@@ -115,12 +143,13 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
                     val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
                     file = File(externalMediaDirs.first(),
                         "${timeStamp}.jpg")
+                    uploadFileName = "$timeStamp.jpg"
+
                     takePicture()
                     setup()
                     count++
                 }
             }
-
         }
     }
 
@@ -128,6 +157,7 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
         super.onDestroy()
         bt.stopService()
     }
+
     override fun onStart() {
         super.onStart()
         if (!bt.isBluetoothEnabled) { //
@@ -140,20 +170,17 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
                 setup()
             }
         }
-
     }
 
     private fun setup() {
         bt.send("1",true)
     }
 
-
     private val executor = Executors.newSingleThreadExecutor()
     private lateinit var viewFinder: TextureView
     val previewConfig = PreviewConfig.Builder().apply {
         setTargetResolution(Size(640, 480))
     }.build()
-
 
     // Build the viewfinder use case
     val preview = Preview(previewConfig)
@@ -168,43 +195,178 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
             }.build()
 
     // Build the image capture use case and attach button click listener
-
-
     val imageCapture = ImageCapture(imageCaptureConfig)
-
     fun takePicture(){
-                imageCapture.takePicture(file, executor,
-                object : ImageCapture.OnImageSavedListener {
-                    override fun onError(
-                            imageCaptureError: ImageCapture.ImageCaptureError,
-                            message: String,
-                            exc: Throwable?)
-                    {
-                        val msg = "Photo capture failed: $message"
-                        Log.e("CameraXApp", msg, exc)
-                        viewFinder.post {
-                            Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                    override fun onImageSaved(file: File) {
-                        val msg = "Photo capture succeeded: ${file.absolutePath}"
-                        Log.d("CameraXApp", msg)
-                        galleryAddPic()
-                        viewFinder.post {
-                            Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                    @Suppress("DEPRECATION")
-                    private fun galleryAddPic() {
-                        Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE).also { mediaScanIntent ->
-                            val f = File(file.absolutePath)
-                            mediaScanIntent.data = Uri.fromFile(f)
-                            sendBroadcast(mediaScanIntent)
-                        }
-                    }
-                })
+        dialog = ProgressDialog.show(this, "", "Uploading file...", true)
 
+        imageCapture.takePicture(file, executor,
+        object : ImageCapture.OnImageSavedListener {
+            override fun onError(
+                    imageCaptureError: ImageCapture.ImageCaptureError,
+                    message: String,
+                    exc: Throwable?)
+            {
+                val msg = "Photo capture failed: $message"
+                Log.e("CameraXApp", msg, exc)
+                viewFinder.post {
+                    Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
+                }
+            }
+            override fun onImageSaved(file: File) {
+                val msg = "Photo capture succeeded: ${file.absolutePath}"
+                Log.d("CameraXApp", msg)
+                galleryAddPic()
+                viewFinder.post {
+                    Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
+                }
+
+                Thread(Runnable {
+                    runOnUiThread { messageText!!.text = "uploading started....." }
+                    for (i in 0..5) {
+                        uploadFile(i, uploadFilePath + "" + uploadFileName, android_id)
+                    }
+                }).start()
+            }
+            @Suppress("DEPRECATION")
+            private fun galleryAddPic() {
+                Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE).also { mediaScanIntent ->
+                    val f = File(file.absolutePath)
+                    mediaScanIntent.data = Uri.fromFile(f)
+                    sendBroadcast(mediaScanIntent)
+                }
+            }
+        })
     }
+
+    fun uploadFile(i: Int, sourceFileUri: String, androidId: String): Int {
+        var conn: HttpURLConnection? = null
+        var dos: DataOutputStream? = null
+        val lineEnd = "\r\n"
+        val twoHyphens = "--"
+        val boundary = "*****"
+        var bytesRead: Int
+        var bytesAvailable: Int
+        var bufferSize: Int
+        val buffer: ByteArray
+        val maxBufferSize = 1 * 1024 * 1024
+
+        val sourceFile = File(sourceFileUri)
+
+        return if (!sourceFile.isFile) {
+            dialog!!.dismiss()
+            Log.e(
+                "uploadFile",
+                "Source File not exist :" + uploadFilePath + "" + uploadFileName
+            )
+            runOnUiThread {
+                messageText!!.text = "Source File not exist :$uploadFilePath" + uploadFileName
+            }
+            0
+        } else {
+            try {
+                // open a URL connection to the Servlet
+                val fileInputStream = FileInputStream(sourceFile)
+                val url = URL(upLoadServerUri)
+
+                // Open a HTTP  connection to  the URL
+                conn = url.openConnection() as HttpURLConnection
+                conn.doInput = true // Allow Inputs
+                conn!!.doOutput = true // Allow Outputs
+                conn.useCaches = false // Don't use a Cached Copy
+                conn.requestMethod = "POST"
+                conn.setRequestProperty("Connection", "Keep-Alive")
+                conn.setRequestProperty("ENCTYPE", "multipart/form-data")
+                conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=$boundary")
+                conn.setRequestProperty("uploaded_file", sourceFileUri)
+                conn.setRequestProperty("img_owner", androidId)
+
+                dos = DataOutputStream(conn.outputStream)
+
+                dos.writeBytes(twoHyphens + boundary + lineEnd)
+                dos.writeBytes("Content-Disposition: form-data; name=\'img_owner\'$lineEnd")
+                dos.writeBytes(lineEnd)
+
+                dos.writeBytes(androidId)
+                dos.writeBytes(lineEnd)
+
+                dos.writeBytes(twoHyphens + boundary + lineEnd)
+                dos.writeBytes("Content-Disposition: form-data; name=\'uploaded_file\';filename=\'$sourceFileUri\'$lineEnd")
+                dos.writeBytes(lineEnd)
+
+                // create a buffer of  maximum size
+                bytesAvailable = fileInputStream.available()
+                bufferSize = Math.min(bytesAvailable, maxBufferSize)
+                buffer = ByteArray(bufferSize)
+
+                // read file and write it into form...
+                bytesRead = fileInputStream.read(buffer, 0, bufferSize)
+                while (bytesRead > 0) {
+                    dos.write(buffer, 0, bufferSize)
+                    bytesAvailable = fileInputStream.available()
+                    bufferSize = Math.min(bytesAvailable, maxBufferSize)
+                    bytesRead = fileInputStream.read(buffer, 0, bufferSize)
+                }
+
+                // send multipart form data necesssary after file data...
+                dos.writeBytes(lineEnd)
+                dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd)
+
+                // Responses from the server (code and message)
+                serverResponseCode = conn.responseCode
+                val serverResponseMessage = conn.responseMessage
+                Log.i(
+                    "uploadFile",
+                    "HTTP Response is : $serverResponseMessage: $serverResponseCode"
+                )
+                if (serverResponseCode == 200) {
+                    runOnUiThread {
+                        val msg =
+                            "File Upload Completed.\n\n See uploaded file here : \n\n " +
+                                    "http://192.168.31.139/project/uploads/${uploadFileName}"
+                        messageText!!.text = msg
+                        Toast.makeText(
+                            this,
+                            "File Upload Complete.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+
+                //close the streams //
+                fileInputStream.close()
+                //}
+                dos.flush()
+                dos.close()
+            } catch (ex: MalformedURLException) {
+                dialog!!.dismiss()
+                ex.printStackTrace()
+                runOnUiThread {
+                    messageText!!.text = "MalformedURLException Exception : check script url."
+                    Toast.makeText(
+                        this,
+                        "MalformedURLException",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                Log.e("Upload file to server", "error: " + ex.message, ex)
+            } catch (e: Exception) {
+                dialog!!.dismiss()
+                e.printStackTrace()
+                runOnUiThread {
+                    messageText!!.text = "Got Exception : see logcat "
+                    Toast.makeText(
+                        this,
+                        "Got Exception : see logcat ",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                Log.e("uploadFile toServer Err", "Exception : " + e.message, e)
+            }
+            dialog!!.dismiss()
+            serverResponseCode
+        } // End else block
+    }
+
     private fun startCamera() {
         // Create configuration object for the viewfinder use case
         preview.setOnPreviewOutputUpdateListener {
@@ -224,7 +386,6 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
                 "${timeStamp}.jpg")
             takePicture()
         }
-
 
         // Bind use cases to lifecycle
         // If Android Studio complains about "this" being not a LifecycleOwner
@@ -274,7 +435,7 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
                 viewFinder.post { startCamera() }
             } else {
                 Toast.makeText(this,
-                        "Permissions not granted by the user.",
+                        "Permissions are not granted by the user.",
                         Toast.LENGTH_SHORT).show()
                 finish()
             }
@@ -285,9 +446,9 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
      * Check if all permission specified in the manifest have been granted
      */
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
-        ContextCompat.checkSelfPermission(
-                baseContext, it) == PackageManager.PERMISSION_GRANTED
+        ContextCompat.checkSelfPermission(baseContext, it) == PackageManager.PERMISSION_GRANTED
     }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if(requestCode == BluetoothState.REQUEST_CONNECT_DEVICE){
@@ -305,4 +466,5 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
             }
         }
     }
+
 }
