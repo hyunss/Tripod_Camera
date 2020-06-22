@@ -5,8 +5,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -26,6 +28,10 @@ import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -78,6 +84,12 @@ public class MainActivity extends AppCompatActivity {
     private CheckBox checkBox5;
     private Button btnGallery;
     private Button savebtn;
+    Bitmap bitmap0;
+    Bitmap bitmap1;
+    Bitmap bitmap2;
+    Bitmap bitmap3;
+    Bitmap bitmap4;
+    Bitmap bitmap5;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -183,12 +195,12 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && requestCode == ImageSelectorActivity.REQUEST_IMAGE) {
             ArrayList<String> images = (ArrayList<String>) data.getSerializableExtra(ImageSelectorActivity.REQUEST_OUTPUT);
-            Bitmap bitmap0 = BitmapFactory.decodeFile(images.get(0));
-            Bitmap bitmap1 = BitmapFactory.decodeFile(images.get(1));
-            Bitmap bitmap2 = BitmapFactory.decodeFile(images.get(2));
-            Bitmap bitmap3 = BitmapFactory.decodeFile(images.get(3));
-            Bitmap bitmap4 = BitmapFactory.decodeFile(images.get(4));
-            Bitmap bitmap5 = BitmapFactory.decodeFile(images.get(5));
+            bitmap0 = BitmapFactory.decodeFile(images.get(0));
+            bitmap1 = BitmapFactory.decodeFile(images.get(1));
+            bitmap2 = BitmapFactory.decodeFile(images.get(2));
+            bitmap3 = BitmapFactory.decodeFile(images.get(3));
+            bitmap4 = BitmapFactory.decodeFile(images.get(4));
+            bitmap5 = BitmapFactory.decodeFile(images.get(5));
 
             Bitmap bitmap_line0 = null;
             Bitmap bitmap_line1 = null;
@@ -342,43 +354,7 @@ public class MainActivity extends AppCompatActivity {
             savebtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(checkBox0.isChecked()){
-                        checkBox0.setText("checked");
-                    }
-                    else {
-                        checkBox0.setText("1번");
-                    }
-                    if(checkBox1.isChecked()){
-                        checkBox1.setText("checked");
-                    }
-                    else {
-                        checkBox1.setText("2번");
-                    }
-                    if(checkBox2.isChecked()){
-                        checkBox2.setText("checked");
-                    }
-                    else {
-                        checkBox2.setText("3번");
-                    }
-                    if(checkBox3.isChecked()){
-                        checkBox3.setText("checked");
-                    }
-                    else {
-                        checkBox3.setText("4번");
-                    }
-                    if(checkBox4.isChecked()){
-                        checkBox4.setText("checked");
-                    }
-                    else {
-                        checkBox4.setText("5번");
-                    }
-                    if(checkBox5.isChecked()){
-                        checkBox5.setText("checked");
-                    }
-                    else {
-                        checkBox5.setText("6번");
-                    }
-
+                    saveImage();
                 }
             });
 
@@ -386,6 +362,130 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
+    }
+    int count=0;
+    public void saveImage(){
+        String ex_storage = Environment.getExternalStorageDirectory().getAbsolutePath();
+
+        String foler_name = "/seoul/";
+        String file_name;
+        String string_path = ex_storage+foler_name;
+        File file_path;
+        if(checkBox0.isChecked()){
+            try{
+                file_name = count++ +".jpg";
+                file_path = new File(string_path);
+                if(!file_path.isDirectory()){
+                    file_path.mkdirs();
+                 }
+            FileOutputStream out = new FileOutputStream(string_path+file_name);
+            bitmap0.compress(Bitmap.CompressFormat.JPEG, 50, out);
+            out.close();
+                sendBroadcast(new Intent( Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
+                        Uri.parse("file://"+string_path+file_name)) );
+
+            }catch(FileNotFoundException exception){
+                Log.e("FileNotFoundException", exception.getMessage());
+            }catch(IOException exception){
+                Log.e("IOException", exception.getMessage());
+            }
+
+        }
+        if(checkBox1.isChecked()){
+            try{
+                file_name = count++ +".jpg";
+                file_path = new File(string_path);
+                if(!file_path.isDirectory()){
+                    file_path.mkdirs();
+                }
+                FileOutputStream out = new FileOutputStream(string_path+file_name);
+                bitmap1.compress(Bitmap.CompressFormat.JPEG, 50, out);
+                out.close();
+                sendBroadcast(new Intent( Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
+                        Uri.parse("file://"+string_path+file_name)) );
+
+            }catch(FileNotFoundException exception){
+                Log.e("FileNotFoundException", exception.getMessage());
+            }catch(IOException exception){
+                Log.e("IOException", exception.getMessage());
+            }
+        }
+        if(checkBox2.isChecked()){
+            try{
+                file_name = count++ +".jpg";
+                file_path = new File(string_path);
+                if(!file_path.isDirectory()){
+                    file_path.mkdirs();
+                }
+                FileOutputStream out = new FileOutputStream(string_path+file_name);
+                bitmap2.compress(Bitmap.CompressFormat.JPEG, 50, out);
+                out.close();
+                sendBroadcast(new Intent( Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
+                        Uri.parse("file://"+string_path+file_name)) );
+
+            }catch(FileNotFoundException exception){
+                Log.e("FileNotFoundException", exception.getMessage());
+            }catch(IOException exception){
+                Log.e("IOException", exception.getMessage());
+            }
+        }
+        if(checkBox3.isChecked()){
+            try{
+                file_name = count++ +".jpg";
+                file_path = new File(string_path);
+                if(!file_path.isDirectory()){
+                    file_path.mkdirs();
+                }
+                FileOutputStream out = new FileOutputStream(string_path+file_name);
+                bitmap3.compress(Bitmap.CompressFormat.JPEG, 50, out);
+                out.close();
+                sendBroadcast(new Intent( Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
+                        Uri.parse("file://"+string_path+file_name)) );
+
+            }catch(FileNotFoundException exception){
+                Log.e("FileNotFoundException", exception.getMessage());
+            }catch(IOException exception){
+                Log.e("IOException", exception.getMessage());
+            }
+        }
+        if(checkBox4.isChecked()){
+            try{
+                file_name = count++ +".jpg";
+                file_path = new File(string_path);
+                if(!file_path.isDirectory()){
+                    file_path.mkdirs();
+                }
+                FileOutputStream out = new FileOutputStream(string_path+file_name);
+                bitmap4.compress(Bitmap.CompressFormat.JPEG, 50, out);
+                out.close();
+                sendBroadcast(new Intent( Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
+                        Uri.parse("file://"+string_path+file_name)) );
+
+            }catch(FileNotFoundException exception){
+                Log.e("FileNotFoundException", exception.getMessage());
+            }catch(IOException exception){
+                Log.e("IOException", exception.getMessage());
+            }
+        }
+        if(checkBox5.isChecked()){
+            try{
+                file_name = count++ +".jpg";
+                file_path = new File(string_path);
+                if(!file_path.isDirectory()){
+                    file_path.mkdirs();
+                }
+                FileOutputStream out = new FileOutputStream(string_path+file_name);
+                bitmap5.compress(Bitmap.CompressFormat.JPEG, 50, out);
+                out.close();
+                sendBroadcast(new Intent( Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
+                        Uri.parse("file://"+string_path+file_name)) );
+
+            }catch(FileNotFoundException exception){
+                Log.e("FileNotFoundException", exception.getMessage());
+            }catch(IOException exception){
+                Log.e("IOException", exception.getMessage());
+            }
+        }
     }
     private void recognize_bitmap0(Bitmap bitmap, Bitmap bitmap_line) {
 
