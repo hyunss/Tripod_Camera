@@ -36,7 +36,7 @@ import java.util.concurrent.Executors
 private const val REQUEST_CODE_PERMISSIONS = 10
 private lateinit var bt : BluetoothSPP
 // This is an array of all the permission specified in the manifest.
-private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA, Manifest.permission.ACCESS_NETWORK_STATE)
+private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
 
 class CameraActivity : AppCompatActivity(), LifecycleOwner{
     var count = 0
@@ -47,14 +47,11 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
     var upLoadServerUri: String? = null
 
     //유니크한 단말 번호 >>> Android ID 사용
-    val android_id = Settings.Secure.getString(
-        this.contentResolver,
-        Settings.Secure.ANDROID_ID
-    )
+    lateinit var android_id:String
 
     /**********  File Path  *************/
-    val uploadFilePath = "/mnt/sdcard/DCIM/Camera/"
-    lateinit var uploadFileName:String // "20200520_155136.jpg"
+    lateinit var uploadFilePath:String // "/mnt/sdcard/DCIM/Camera/"
+    var uploadFileName:String? = null // "20200520_155136.jpg"
 
     private lateinit var file : File
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,12 +60,30 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
 
         viewFinder = findViewById(R.id.view_finder1)
         messageText = findViewById<View>(R.id.messageText) as TextView
+
+        //유니크한 단말 번호 >>> Android ID 사용
+        android_id = Settings.Secure.getString(
+            this.contentResolver,
+            Settings.Secure.ANDROID_ID
+        )
         messageText!!.text = android_id
 
         /************* Php script path ****************/
-        upLoadServerUri = "http://192.168.31.139/project/upload.php"
+        upLoadServerUri = "http://192.168.25.11/project/upload.php"
         // "http://192.168.112.38/project/upload.php";
 
+        // Request permission from the user
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_NETWORK_STATE
+            ) == PackageManager.PERMISSION_DENIED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_NETWORK_STATE),
+                0
+            )
+        }
 
         // Request camera permissions
         if (allPermissionsGranted()) {
@@ -144,7 +159,6 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
                     file = File(externalMediaDirs.first(),
                         "${timeStamp}.jpg")
                     uploadFileName = "$timeStamp.jpg"
-
                     takePicture()
                     setup()
                     count++
@@ -196,7 +210,8 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
 
     // Build the image capture use case and attach button click listener
     val imageCapture = ImageCapture(imageCaptureConfig)
-    fun takePicture(){
+
+    fun takePicture(){ //uploadFileName: String
         dialog = ProgressDialog.show(this, "", "Uploading file...", true)
 
         imageCapture.takePicture(file, executor,
@@ -215,16 +230,15 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
             override fun onImageSaved(file: File) {
                 val msg = "Photo capture succeeded: ${file.absolutePath}"
                 Log.d("CameraXApp", msg)
+                Log.i("path", "${file.absolutePath}");
                 galleryAddPic()
                 viewFinder.post {
                     Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
                 }
-
+                uploadFilePath = "${file.absolutePath}"
                 Thread(Runnable {
-                    runOnUiThread { messageText!!.text = "uploading started....." }
-                    for (i in 0..5) {
-                        uploadFile(i, uploadFilePath + "" + uploadFileName, android_id)
-                    }
+                    //runOnUiThread { messageText!!.text = "uploading started....." }
+                    uploadFile(uploadFilePath, android_id) //  + "" + uploadFileName
                 }).start()
             }
             @Suppress("DEPRECATION")
@@ -238,7 +252,7 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
         })
     }
 
-    fun uploadFile(i: Int, sourceFileUri: String, androidId: String): Int {
+    fun uploadFile(sourceFileUri: String, androidId: String): Int {
         var conn: HttpURLConnection? = null
         var dos: DataOutputStream? = null
         val lineEnd = "\r\n"
@@ -256,10 +270,10 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
             dialog!!.dismiss()
             Log.e(
                 "uploadFile",
-                "Source File not exist :" + uploadFilePath + "" + uploadFileName
+                "Source File not exist :" + uploadFilePath //  + "" + uploadFileName
             )
             runOnUiThread {
-                messageText!!.text = "Source File not exist :$uploadFilePath" + uploadFileName
+                //messageText!!.text = "Source File not exist :$uploadFilePath" + uploadFileName
             }
             0
         } else {
@@ -322,7 +336,7 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
                     runOnUiThread {
                         val msg =
                             "File Upload Completed.\n\n See uploaded file here : \n\n " +
-                                    "http://192.168.31.139/project/uploads/${uploadFileName}"
+                                    "http://192.168.25.11/project/uploads/${uploadFileName}"
                         messageText!!.text = msg
                         Toast.makeText(
                             this,
@@ -384,6 +398,7 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
             val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
             file = File(externalMediaDirs.first(),
                 "${timeStamp}.jpg")
+            uploadFileName = "$timeStamp.jpg"
             takePicture()
         }
 
