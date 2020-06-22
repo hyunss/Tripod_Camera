@@ -100,7 +100,7 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
 
 
         bt.setOnDataReceivedListener { _, message ->  //데이터 수신
-            if(count<10){
+            if(count<6){
                 if(message == "1"){
                     preview.setOnPreviewOutputUpdateListener {
 
@@ -113,8 +113,9 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
                         updateTransform()
 
                     }
+                    val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
                     file = File(externalMediaDirs.first(),
-                            "${System.currentTimeMillis()}.jpg")
+                        "${timeStamp}.jpg")
                     takePicture()
                     setup()
                     count++
