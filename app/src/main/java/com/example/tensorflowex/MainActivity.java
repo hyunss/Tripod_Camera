@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -69,6 +70,15 @@ public class MainActivity extends AppCompatActivity {
     private TextView txtResult_line5;
     private ImageView imgResult5;
 
+    private CheckBox checkBox0;
+    private CheckBox checkBox1;
+    private CheckBox checkBox2;
+    private CheckBox checkBox3;
+    private CheckBox checkBox4;
+    private CheckBox checkBox5;
+    private Button btnGallery;
+    private Button savebtn;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -99,7 +109,9 @@ public class MainActivity extends AppCompatActivity {
         txtResult5 = (TextView) findViewById(R.id.txtResult5);
         txtResult_line5 = (TextView) findViewById(R.id.txtResult_line5);
 
-        Button btnGallery = (Button) findViewById(R.id.btnGallery);
+        btnGallery = (Button) findViewById(R.id.btnGallery);
+
+        savebtn = (Button) findViewById(R.id.saveBtn);
 
         //텐서플로우 초기화 및 그래프파일 메모리에 탑재
         initTensorFlowAndLoadModel();
@@ -152,7 +164,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
 
     public void GallaryOnClick(View view) {
         LoadImageFromGallery();
@@ -320,7 +331,61 @@ public class MainActivity extends AppCompatActivity {
             recognize_bitmap3(bitmap3, bitmap_line3);
             recognize_bitmap4(bitmap4, bitmap_line4);
             recognize_bitmap5(bitmap5, bitmap_line5);
+
+            checkBox0 = (CheckBox) findViewById(R.id.check0);
+            checkBox1 = (CheckBox) findViewById(R.id.check1);
+            checkBox2 = (CheckBox) findViewById(R.id.check2);
+            checkBox3 = (CheckBox) findViewById(R.id.check3);
+            checkBox4 = (CheckBox) findViewById(R.id.check4);
+            checkBox5 = (CheckBox) findViewById(R.id.check5);
+
+            savebtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(checkBox0.isChecked()){
+                        checkBox0.setText("checked");
+                    }
+                    else {
+                        checkBox0.setText("1번");
+                    }
+                    if(checkBox1.isChecked()){
+                        checkBox1.setText("checked");
+                    }
+                    else {
+                        checkBox1.setText("2번");
+                    }
+                    if(checkBox2.isChecked()){
+                        checkBox2.setText("checked");
+                    }
+                    else {
+                        checkBox2.setText("3번");
+                    }
+                    if(checkBox3.isChecked()){
+                        checkBox3.setText("checked");
+                    }
+                    else {
+                        checkBox3.setText("4번");
+                    }
+                    if(checkBox4.isChecked()){
+                        checkBox4.setText("checked");
+                    }
+                    else {
+                        checkBox4.setText("5번");
+                    }
+                    if(checkBox5.isChecked()){
+                        checkBox5.setText("checked");
+                    }
+                    else {
+                        checkBox5.setText("6번");
+                    }
+
+                }
+            });
+
+
+
         }
+
     }
     private void recognize_bitmap0(Bitmap bitmap, Bitmap bitmap_line) {
 

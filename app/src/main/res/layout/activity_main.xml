@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:layout_margin="10dp"
+    android:layout_gravity="center">
 
 
     <ImageView
@@ -79,8 +81,9 @@
         android:layout_height="200px"
         android:onClick="GallaryOnClick"
         android:text="GALLERY"
+        android:layout_marginTop="20dp"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtResult_line5" />
+        app:layout_constraintTop_toBottomOf="@+id/chLinear" />
     <TextView
         android:id="@+id/txtResult0"
         android:layout_width="120dp"
@@ -161,7 +164,63 @@
         android:layout_marginStart="240dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtResult5"/>
+    <LinearLayout
+        android:id="@+id/chLinear"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
 
-
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtResult_line3"
+        >
+        <CheckBox
+            android:id="@+id/check0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1번"
+             />
+        <CheckBox
+            android:id="@+id/check1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2번"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/check0" />
+        <CheckBox
+            android:id="@+id/check2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="3번"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/check1" />
+        <CheckBox
+            android:id="@+id/check3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="4번"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/check2" />
+        <CheckBox
+            android:id="@+id/check4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="5번"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/check3" />
+        <CheckBox
+            android:id="@+id/check5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="6번"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/check4" />
+    </LinearLayout>
+    <Button
+        android:id="@+id/saveBtn"
+        android:layout_width="400px"
+        android:layout_height="200px"
+        android:text="SAVE"
+        android:layout_marginTop="20dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnGallery" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

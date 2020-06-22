@@ -98,7 +98,6 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
 
         }
 
-
         bt.setOnDataReceivedListener { _, message ->  //데이터 수신
             if(count<6){
                 if(message == "1"){
