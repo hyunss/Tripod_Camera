@@ -5,13 +5,12 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
-import android.media.ExifInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -27,7 +26,6 @@ import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -51,20 +49,69 @@ public class MainActivity extends AppCompatActivity {
     private Classifier_line classifier_line;
     private Executor executor = Executors.newSingleThreadExecutor();
 
-    private TextView txtResult;
-    private TextView txtResult_line;
-    private ImageView imgResult;
+    private TextView txtResult0;
+    private TextView txtResult_line0;
+    private ImageView imgResult0;
+
+    private TextView txtResult1;
+    private TextView txtResult_line1;
+    private ImageView imgResult1;
+    private TextView txtResult2;
+    private TextView txtResult_line2;
+    private ImageView imgResult2;
+
+    private TextView txtResult3;
+    private TextView txtResult_line3;
+    private ImageView imgResult3;
+    private TextView txtResult4;
+    private TextView txtResult_line4;
+    private ImageView imgResult4;
+    private TextView txtResult5;
+    private TextView txtResult_line5;
+    private ImageView imgResult5;
+
+    private CheckBox checkBox0;
+    private CheckBox checkBox1;
+    private CheckBox checkBox2;
+    private CheckBox checkBox3;
+    private CheckBox checkBox4;
+    private CheckBox checkBox5;
+    private Button btnGallery;
+    private Button savebtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        txtResult = (TextView)findViewById(R.id.txtResult);
-        txtResult_line = (TextView)findViewById(R.id.txtResult_line) ;
-        imgResult = (ImageView)findViewById(R.id.imgResult);
 
-        Button btnGallery = (Button) findViewById(R.id.btnGallery);
+        imgResult0 = (ImageView)findViewById(R.id.imgResult0);
+        txtResult0 = (TextView) findViewById(R.id.txtResult0);
+        txtResult_line0 = (TextView) findViewById(R.id.txtResult_line0);
+
+        imgResult1 = (ImageView)findViewById(R.id.imgResult1);
+        txtResult1 = (TextView) findViewById(R.id.txtResult1);
+        txtResult_line1 = (TextView) findViewById(R.id.txtResult_line1);
+
+        imgResult2 = (ImageView)findViewById(R.id.imgResult2);
+        txtResult2 = (TextView) findViewById(R.id.txtResult2);
+        txtResult_line2 = (TextView) findViewById(R.id.txtResult_line2);
+
+        imgResult3 = (ImageView)findViewById(R.id.imgResult3);
+        txtResult3 = (TextView) findViewById(R.id.txtResult3);
+        txtResult_line3 = (TextView) findViewById(R.id.txtResult_line3);
+
+        imgResult4 = (ImageView)findViewById(R.id.imgResult4);
+        txtResult4 = (TextView) findViewById(R.id.txtResult4);
+        txtResult_line4 = (TextView) findViewById(R.id.txtResult_line4);
+
+        imgResult5 = (ImageView)findViewById(R.id.imgResult5);
+        txtResult5 = (TextView) findViewById(R.id.txtResult5);
+        txtResult_line5 = (TextView) findViewById(R.id.txtResult_line5);
+
+        btnGallery = (Button) findViewById(R.id.btnGallery);
+
+        savebtn = (Button) findViewById(R.id.saveBtn);
 
         //텐서플로우 초기화 및 그래프파일 메모리에 탑재
         initTensorFlowAndLoadModel();
@@ -118,14 +165,13 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
     public void GallaryOnClick(View view) {
         LoadImageFromGallery();
     }
 
     private void LoadImageFromGallery() {
         // 이미지를 한장만 선택하도록 이미지피커 실행
-        ImageSelectorActivity.start(MainActivity.this, 1, ImageSelectorActivity.MODE_SINGLE, false,false,false);
+        ImageSelectorActivity.start(MainActivity.this, 6, ImageSelectorActivity.MODE_MULTIPLE, false,false,false);
     }
 
     // 가져온 이미지를 텐서플로우로 넘기기
@@ -137,41 +183,37 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && requestCode == ImageSelectorActivity.REQUEST_IMAGE) {
             ArrayList<String> images = (ArrayList<String>) data.getSerializableExtra(ImageSelectorActivity.REQUEST_OUTPUT);
+            Bitmap bitmap0 = BitmapFactory.decodeFile(images.get(0));
+            Bitmap bitmap1 = BitmapFactory.decodeFile(images.get(1));
+            Bitmap bitmap2 = BitmapFactory.decodeFile(images.get(2));
+            Bitmap bitmap3 = BitmapFactory.decodeFile(images.get(3));
+            Bitmap bitmap4 = BitmapFactory.decodeFile(images.get(4));
+            Bitmap bitmap5 = BitmapFactory.decodeFile(images.get(5));
+
+            Bitmap bitmap_line0 = null;
+            Bitmap bitmap_line1 = null;
+            Bitmap bitmap_line2 = null;
+            Bitmap bitmap_line3 = null;
+            Bitmap bitmap_line4 = null;
+            Bitmap bitmap_line5 = null;
 
             // 이미지는 안드로이드용 텐서플로우가 인식할 수 있는 포맷인 비트맵으로 변환해서 텐서플로우에 넘깁니다
-            Bitmap bitmap = BitmapFactory.decodeFile(images.get(0));
-            Bitmap bitmap_line = BitmapFactory.decodeFile(images.get(0));
 
-            // 촬영시 가로, 세로 방향에 따라 사진 rotate
-            // 이미지의 EXIF 데이터를 보면 사진을 촬영할 때 카메라의 방향을 알 수 있음.
-            try {
-                ExifInterface exif = new ExifInterface(images.get(0));
-                int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1);
-                Log.d("EXIF", "Exif: " + orientation);
-                Matrix matrix = new Matrix();
-                if (orientation == 6) {
-                    matrix.postRotate(90);
-                } else if (orientation == 3) {
-                    matrix.postRotate(180);
-                } else if (orientation == 8) {
-                    matrix.postRotate(270);
-                }
-                bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true); // rotating bitmap
-                bitmap_line = Bitmap.createBitmap(bitmap_line, 0, 0, bitmap_line.getWidth(), bitmap_line.getHeight(), matrix, true); // rotating bitmap
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            //
             OpenCVLoader.initDebug();
 
+            bitmap_line0 = bitmap0;
+            bitmap_line1 = bitmap1;
+            bitmap_line2 = bitmap2;
+            bitmap_line3 = bitmap3;
+            bitmap_line4 = bitmap4;
+            bitmap_line5 = bitmap5;
             Mat initImg = new Mat(); // initial image
             Mat greyImg = new Mat(); // converted to grey
             Mat lines = new Mat();
             int threshold = 50;
             int minLineSize = 20;
             int lineGap = 10;
-            Utils.bitmapToMat(bitmap_line, initImg);
+            Utils.bitmapToMat(bitmap0, initImg);
             Imgproc.cvtColor(initImg, greyImg, Imgproc.COLOR_BGR2GRAY);
             //Bitmap bitm = Bitmap.createBitmap(greyImg.cols(), greyImg.rows(),Bitmap.Config.ARGB_8888);
             Imgproc.Canny(greyImg, greyImg, 250, 300, 3, true);
@@ -188,12 +230,164 @@ public class MainActivity extends AppCompatActivity {
                 Point end = new Point(x2, y2);
                 Imgproc.line(initImg, start, end, new Scalar(0, 0, 255), 5);// here initimg is the original image.
             }
-            Utils.matToBitmap(initImg, bitmap_line);
+            Utils.matToBitmap(initImg, bitmap_line0);
 
-            recognize_bitmap(bitmap, bitmap_line);
+            Utils.bitmapToMat(bitmap_line1, initImg);
+            Imgproc.cvtColor(initImg, greyImg, Imgproc.COLOR_BGR2GRAY);
+            //Bitmap bitm = Bitmap.createBitmap(greyImg.cols(), greyImg.rows(),Bitmap.Config.ARGB_8888);
+            Imgproc.Canny(greyImg, greyImg, 250, 300, 3, true);
+            Imgproc.HoughLinesP(greyImg, lines, 1, Math.PI / 180, threshold,
+                    minLineSize, lineGap);
+
+            for (int x = 0; x < lines.rows(); x++) {
+                double[] vec = lines.get(x, 0);
+                double x1 = vec[0],
+                        y1 = vec[1],
+                        x2 = vec[2],
+                        y2 = vec[3];
+                Point start = new Point(x1, y1);
+                Point end = new Point(x2, y2);
+                Imgproc.line(initImg, start, end, new Scalar(0, 0, 255), 5);// here initimg is the original image.
+            }
+            Utils.matToBitmap(initImg, bitmap_line1);
+            Utils.bitmapToMat(bitmap_line2, initImg);
+            Imgproc.cvtColor(initImg, greyImg, Imgproc.COLOR_BGR2GRAY);
+            //Bitmap bitm = Bitmap.createBitmap(greyImg.cols(), greyImg.rows(),Bitmap.Config.ARGB_8888);
+            Imgproc.Canny(greyImg, greyImg, 250, 300, 3, true);
+            Imgproc.HoughLinesP(greyImg, lines, 1, Math.PI / 180, threshold,
+                    minLineSize, lineGap);
+
+            for (int x = 0; x < lines.rows(); x++) {
+                double[] vec = lines.get(x, 0);
+                double x1 = vec[0],
+                        y1 = vec[1],
+                        x2 = vec[2],
+                        y2 = vec[3];
+                Point start = new Point(x1, y1);
+                Point end = new Point(x2, y2);
+                Imgproc.line(initImg, start, end, new Scalar(0, 0, 255), 5);// here initimg is the original image.
+            }
+            Utils.matToBitmap(initImg, bitmap_line2);
+
+            Utils.bitmapToMat(bitmap_line3, initImg);
+            Imgproc.cvtColor(initImg, greyImg, Imgproc.COLOR_BGR2GRAY);
+            //Bitmap bitm = Bitmap.createBitmap(greyImg.cols(), greyImg.rows(),Bitmap.Config.ARGB_8888);
+            Imgproc.Canny(greyImg, greyImg, 250, 300, 3, true);
+            Imgproc.HoughLinesP(greyImg, lines, 1, Math.PI / 180, threshold,
+                    minLineSize, lineGap);
+
+            for (int x = 0; x < lines.rows(); x++) {
+                double[] vec = lines.get(x, 0);
+                double x1 = vec[0],
+                        y1 = vec[1],
+                        x2 = vec[2],
+                        y2 = vec[3];
+                Point start = new Point(x1, y1);
+                Point end = new Point(x2, y2);
+                Imgproc.line(initImg, start, end, new Scalar(0, 0, 255), 5);// here initimg is the original image.
+            }
+            Utils.matToBitmap(initImg, bitmap_line3);
+
+            Utils.bitmapToMat(bitmap_line4, initImg);
+            Imgproc.cvtColor(initImg, greyImg, Imgproc.COLOR_BGR2GRAY);
+            //Bitmap bitm = Bitmap.createBitmap(greyImg.cols(), greyImg.rows(),Bitmap.Config.ARGB_8888);
+            Imgproc.Canny(greyImg, greyImg, 250, 300, 3, true);
+            Imgproc.HoughLinesP(greyImg, lines, 1, Math.PI / 180, threshold,
+                    minLineSize, lineGap);
+
+            for (int x = 0; x < lines.rows(); x++) {
+                double[] vec = lines.get(x, 0);
+                double x1 = vec[0],
+                        y1 = vec[1],
+                        x2 = vec[2],
+                        y2 = vec[3];
+                Point start = new Point(x1, y1);
+                Point end = new Point(x2, y2);
+                Imgproc.line(initImg, start, end, new Scalar(0, 0, 255), 5);// here initimg is the original image.
+            }
+            Utils.matToBitmap(initImg, bitmap_line4);
+            Utils.bitmapToMat(bitmap_line5, initImg);
+            Imgproc.cvtColor(initImg, greyImg, Imgproc.COLOR_BGR2GRAY);
+            //Bitmap bitm = Bitmap.createBitmap(greyImg.cols(), greyImg.rows(),Bitmap.Config.ARGB_8888);
+            Imgproc.Canny(greyImg, greyImg, 250, 300, 3, true);
+            Imgproc.HoughLinesP(greyImg, lines, 1, Math.PI / 180, threshold,
+                    minLineSize, lineGap);
+
+            for (int x = 0; x < lines.rows(); x++) {
+                double[] vec = lines.get(x, 0);
+                double x1 = vec[0],
+                        y1 = vec[1],
+                        x2 = vec[2],
+                        y2 = vec[3];
+                Point start = new Point(x1, y1);
+                Point end = new Point(x2, y2);
+                Imgproc.line(initImg, start, end, new Scalar(0, 0, 255), 5);// here initimg is the original image.
+            }
+            Utils.matToBitmap(initImg, bitmap_line5);
+
+            recognize_bitmap0(bitmap0, bitmap_line0);
+            recognize_bitmap1(bitmap1, bitmap_line1);
+            recognize_bitmap2(bitmap2, bitmap_line2);
+            recognize_bitmap3(bitmap3, bitmap_line3);
+            recognize_bitmap4(bitmap4, bitmap_line4);
+            recognize_bitmap5(bitmap5, bitmap_line5);
+
+            checkBox0 = (CheckBox) findViewById(R.id.check0);
+            checkBox1 = (CheckBox) findViewById(R.id.check1);
+            checkBox2 = (CheckBox) findViewById(R.id.check2);
+            checkBox3 = (CheckBox) findViewById(R.id.check3);
+            checkBox4 = (CheckBox) findViewById(R.id.check4);
+            checkBox5 = (CheckBox) findViewById(R.id.check5);
+
+            savebtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(checkBox0.isChecked()){
+                        checkBox0.setText("checked");
+                    }
+                    else {
+                        checkBox0.setText("1번");
+                    }
+                    if(checkBox1.isChecked()){
+                        checkBox1.setText("checked");
+                    }
+                    else {
+                        checkBox1.setText("2번");
+                    }
+                    if(checkBox2.isChecked()){
+                        checkBox2.setText("checked");
+                    }
+                    else {
+                        checkBox2.setText("3번");
+                    }
+                    if(checkBox3.isChecked()){
+                        checkBox3.setText("checked");
+                    }
+                    else {
+                        checkBox3.setText("4번");
+                    }
+                    if(checkBox4.isChecked()){
+                        checkBox4.setText("checked");
+                    }
+                    else {
+                        checkBox4.setText("5번");
+                    }
+                    if(checkBox5.isChecked()){
+                        checkBox5.setText("checked");
+                    }
+                    else {
+                        checkBox5.setText("6번");
+                    }
+
+                }
+            });
+
+
+
         }
+
     }
-    private void recognize_bitmap(Bitmap bitmap, Bitmap bitmap_line) {
+    private void recognize_bitmap0(Bitmap bitmap, Bitmap bitmap_line) {
 
         // 비트맵을 처음에 정의된 INPUT SIZE에 맞춰 스케일링 (상의 왜곡이 일어날수 있는데, 이건 나중에 따로 설명할게요)
         bitmap = Bitmap.createScaledBitmap(bitmap, INPUT_SIZE, INPUT_SIZE, false);
@@ -206,8 +400,61 @@ public class MainActivity extends AppCompatActivity {
         // 여기서는 간단하게 그냥 통째로 txtResult에 뿌려줍니다.
         // imgResult에는 분석에 사용된 비트맵을 뿌려줍니다.
 
-        imgResult.setImageBitmap(bitmap_line);
-        txtResult.setText(results.toString());
-        txtResult_line.setText(results_line.toString());
+        imgResult0.setImageBitmap(bitmap);
+        txtResult0.setText(results.toString());
+        txtResult_line0.setText(results_line.toString());
+    }
+    private void recognize_bitmap1(Bitmap bitmap, Bitmap bitmap_line) {
+        bitmap = Bitmap.createScaledBitmap(bitmap, INPUT_SIZE, INPUT_SIZE, false);
+        bitmap_line = Bitmap.createScaledBitmap(bitmap_line, INPUT_SIZE, INPUT_SIZE, false);
+        final List<Classifier.Recognition> results = classifier.recognizeImage(bitmap);
+        final List<Classifier_line.Recognition> results_line = classifier_line.recognizeImage(bitmap_line);
+        imgResult1.setImageBitmap(bitmap);
+        txtResult1.setText(results.toString());
+        txtResult_line1.setText(results_line.toString());
+    }
+    private void recognize_bitmap2(Bitmap bitmap, Bitmap bitmap_line) {
+        bitmap = Bitmap.createScaledBitmap(bitmap, INPUT_SIZE, INPUT_SIZE, false);
+        bitmap_line = Bitmap.createScaledBitmap(bitmap_line, INPUT_SIZE, INPUT_SIZE, false);
+        final List<Classifier.Recognition> results = classifier.recognizeImage(bitmap);
+        final List<Classifier_line.Recognition> results_line = classifier_line.recognizeImage(bitmap_line);
+        imgResult2.setImageBitmap(bitmap);
+        txtResult2.setText(results.toString());
+        txtResult_line2.setText(results_line.toString());
+    }
+    private void recognize_bitmap3(Bitmap bitmap, Bitmap bitmap_line) {
+
+        // 비트맵을 처음에 정의된 INPUT SIZE에 맞춰 스케일링 (상의 왜곡이 일어날수 있는데, 이건 나중에 따로 설명할게요)
+        bitmap = Bitmap.createScaledBitmap(bitmap, INPUT_SIZE, INPUT_SIZE, false);
+        bitmap_line = Bitmap.createScaledBitmap(bitmap_line, INPUT_SIZE, INPUT_SIZE, false);
+// classifier 의 recognizeImage 부분이 실제 inference 를 호출해서 인식작업을 하는 부분입니다.
+        final List<Classifier.Recognition> results = classifier.recognizeImage(bitmap);
+        final List<Classifier_line.Recognition> results_line = classifier_line.recognizeImage(bitmap_line);
+
+        // 결과값은 Classifier.Recognition 구조로 리턴되는데, 원래는 여기서 결과값을 배열로 추출가능하지만,
+        // 여기서는 간단하게 그냥 통째로 txtResult에 뿌려줍니다.
+        // imgResult에는 분석에 사용된 비트맵을 뿌려줍니다.
+
+        imgResult3.setImageBitmap(bitmap);
+        txtResult3.setText(results.toString());
+        txtResult_line3.setText(results_line.toString());
+    }
+    private void recognize_bitmap4(Bitmap bitmap, Bitmap bitmap_line) {
+        bitmap = Bitmap.createScaledBitmap(bitmap, INPUT_SIZE, INPUT_SIZE, false);
+        bitmap_line = Bitmap.createScaledBitmap(bitmap_line, INPUT_SIZE, INPUT_SIZE, false);
+        final List<Classifier.Recognition> results = classifier.recognizeImage(bitmap);
+        final List<Classifier_line.Recognition> results_line = classifier_line.recognizeImage(bitmap_line);
+        imgResult4.setImageBitmap(bitmap);
+        txtResult4.setText(results.toString());
+        txtResult_line4.setText(results_line.toString());
+    }
+    private void recognize_bitmap5(Bitmap bitmap, Bitmap bitmap_line) {
+        bitmap = Bitmap.createScaledBitmap(bitmap, INPUT_SIZE, INPUT_SIZE, false);
+        bitmap_line = Bitmap.createScaledBitmap(bitmap_line, INPUT_SIZE, INPUT_SIZE, false);
+        final List<Classifier.Recognition> results = classifier.recognizeImage(bitmap);
+        final List<Classifier_line.Recognition> results_line = classifier_line.recognizeImage(bitmap_line);
+        imgResult5.setImageBitmap(bitmap);
+        txtResult5.setText(results.toString());
+        txtResult_line5.setText(results_line.toString());
     }
 }
