@@ -25,6 +25,8 @@ import app.akexorcist.bluetotohspp.library.BluetoothSPP
 import app.akexorcist.bluetotohspp.library.BluetoothState
 import app.akexorcist.bluetotohspp.library.DeviceList
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.*
 import java.util.concurrent.Executors
 
 private const val REQUEST_CODE_PERMISSIONS = 10
@@ -34,6 +36,8 @@ private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
 
 class CameraActivity : AppCompatActivity(), LifecycleOwner{
     var count = 0
+
+    private lateinit var file : File
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_camera)
@@ -164,12 +168,12 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
             }.build()
 
     // Build the image capture use case and attach button click listener
-    val imageCapture = ImageCapture(imageCaptureConfig)
-    private lateinit var file : File
 
+
+    val imageCapture = ImageCapture(imageCaptureConfig)
 
     fun takePicture(){
-        imageCapture.takePicture(file, executor,
+                imageCapture.takePicture(file, executor,
                 object : ImageCapture.OnImageSavedListener {
                     override fun onError(
                             imageCaptureError: ImageCapture.ImageCaptureError,
@@ -182,7 +186,6 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
                             Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
                         }
                     }
-
                     override fun onImageSaved(file: File) {
                         val msg = "Photo capture succeeded: ${file.absolutePath}"
                         Log.d("CameraXApp", msg)
@@ -215,9 +218,10 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
             updateTransform()
         }
 
-        file = File(externalMediaDirs.first(),
-                "${System.currentTimeMillis()}.jpg")
         findViewById<ImageButton>(R.id.capture_button).setOnClickListener {
+            val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+            file = File(externalMediaDirs.first(),
+                "${timeStamp}.jpg")
             takePicture()
         }
 

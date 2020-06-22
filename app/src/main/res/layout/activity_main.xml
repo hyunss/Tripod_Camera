@@ -6,34 +6,72 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <TextView
-        android:id="@+id/txtResult"
-        android:layout_width="600px"
-        android:layout_height="300px"
-
-        android:text="Hello World!"
-        app:layout_constraintRight_toRightOf="@+id/imgResult"
-        app:layout_constraintTop_toBottomOf="@+id/imgResult" />
-
-    <TextView
-        android:id="@+id/txtResult_line"
-        android:layout_width="600px"
-        android:layout_height="300px"
-
-        android:text="Hello World!"
-        app:layout_constraintRight_toRightOf="@+id/txtResult"
-        app:layout_constraintTop_toBottomOf="@+id/txtResult" />
 
     <ImageView
-        android:id="@+id/imgResult"
-        android:layout_width="1200px"
-        android:layout_height="1300px"
+        android:id="@+id/imgResult0"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
         android:layout_gravity = "center"
         android:adjustViewBounds="true"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-
         />
+
+    <ImageView
+        android:id="@+id/imgResult1"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_gravity="center"
+        android:layout_marginStart="120dp"
+        android:layout_marginTop="0dp"
+        android:adjustViewBounds="true"
+
+        app:layout_constraintStart_toStartOf="@+id/imgResult0"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/imgResult2"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_gravity="center"
+        android:layout_marginStart="120dp"
+        android:layout_marginTop="0dp"
+        android:adjustViewBounds="true"
+
+        app:layout_constraintStart_toStartOf="@+id/imgResult1"
+        app:layout_constraintTop_toTopOf="parent" />
+    <ImageView
+        android:id="@+id/imgResult3"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_gravity = "center"
+        android:adjustViewBounds="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtResult_line0"
+        />
+
+    <ImageView
+        android:id="@+id/imgResult4"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_gravity="center"
+        android:layout_marginStart="120dp"
+        android:layout_marginTop="0dp"
+        android:adjustViewBounds="true"
+
+        app:layout_constraintStart_toStartOf="@+id/imgResult3"
+        app:layout_constraintTop_toBottomOf="@+id/txtResult_line1" />
+
+    <ImageView
+        android:id="@+id/imgResult5"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="0dp"
+        android:adjustViewBounds="true"
+        android:layout_marginStart="120dp"
+        app:layout_constraintStart_toStartOf="@+id/imgResult4"
+        app:layout_constraintTop_toBottomOf="@id/txtResult_line2"  />
 
     <Button
         android:id="@+id/btnGallery"
@@ -41,7 +79,89 @@
         android:layout_height="200px"
         android:onClick="GallaryOnClick"
         android:text="GALLERY"
-        app:layout_constraintRight_toLeftOf="@+id/txtResult"
-        app:layout_constraintTop_toBottomOf="@+id/imgResult" />
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtResult_line5" />
+    <TextView
+        android:id="@+id/txtResult0"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imgResult0"/>
+    <TextView
+        android:id="@+id/txtResult_line0"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtResult0"/>
+    <TextView
+        android:id="@+id/txtResult1"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="120dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imgResult1"/>
+    <TextView
+        android:id="@+id/txtResult_line1"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="120dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtResult1"/>
+    <TextView
+        android:id="@+id/txtResult2"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="240dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imgResult2"/>
+    <TextView
+        android:id="@+id/txtResult_line2"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="240dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtResult2"/>
+    <TextView
+        android:id="@+id/txtResult3"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imgResult3"/>
+    <TextView
+        android:id="@+id/txtResult_line3"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtResult3"/>
+    <TextView
+        android:id="@+id/txtResult4"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="120dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imgResult4"/>
+    <TextView
+        android:id="@+id/txtResult_line4"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="120dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtResult4"/>
+    <TextView
+        android:id="@+id/txtResult5"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="240dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imgResult5"/>
+    <TextView
+        android:id="@+id/txtResult_line5"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="240dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtResult5"/>
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
