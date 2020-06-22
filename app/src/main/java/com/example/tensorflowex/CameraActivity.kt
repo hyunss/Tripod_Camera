@@ -337,7 +337,7 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
                         val msg =
                             "File Upload Completed.\n\n See uploaded file here : \n\n " +
                                     "http://192.168.25.11/project/uploads/${uploadFileName}"
-                        messageText!!.text = msg
+//                        messageText!!.text = msg
                         Toast.makeText(
                             this,
                             "File Upload Complete.",
@@ -355,7 +355,7 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
                 dialog!!.dismiss()
                 ex.printStackTrace()
                 runOnUiThread {
-                    messageText!!.text = "MalformedURLException Exception : check script url."
+//                    messageText!!.text = "MalformedURLException Exception : check script url."
                     Toast.makeText(
                         this,
                         "MalformedURLException",
@@ -367,7 +367,7 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
                 dialog!!.dismiss()
                 e.printStackTrace()
                 runOnUiThread {
-                    messageText!!.text = "Got Exception : see logcat "
+//                    messageText!!.text = "Got Exception : see logcat "
                     Toast.makeText(
                         this,
                         "Got Exception : see logcat ",
