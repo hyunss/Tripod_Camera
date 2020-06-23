@@ -23,6 +23,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import app.akexorcist.bluetotohspp.library.BluetoothSPP
 import app.akexorcist.bluetotohspp.library.BluetoothState
+import app.akexorcist.bluetotohspp.library.DeviceList
 import java.io.DataOutputStream
 import java.io.File
 import java.io.FileInputStream
@@ -129,19 +130,19 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
 
         val btnConnect : ImageButton = findViewById(R.id.btnConnect)
         btnConnect.setOnClickListener{
-            /*
+
             if (bt.serviceState == BluetoothState.STATE_CONNECTED) {
                 bt.disconnect()
             } else {
                 val intent = Intent(applicationContext, DeviceList::class.java)
                 startActivityForResult(intent, BluetoothState.REQUEST_CONNECT_DEVICE)
-            }*/
+            }/*
             val intent = Intent(baseContext, MainActivity::class.java)
-            startActivity(intent)
+            startActivity(intent)*/
 
         }
 
-        bt.setOnDataReceivedListener { _, message ->  //데이터 수신
+        bt.setOnDataReceivedListener { _, message -> //데이터 수신
             if(count<6){
                 if(message == "1"){
                     preview.setOnPreviewOutputUpdateListener {
@@ -157,7 +158,8 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
                     }
                     val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
                     file = File(externalMediaDirs.first(),
-                        "${timeStamp}.jpg")
+                        "$count.jpg"
+                    )
                     uploadFileName = "$timeStamp.jpg"
                     takePicture()
                     setup()
@@ -231,7 +233,7 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
                 val msg = "Photo capture succeeded: ${file.absolutePath}"
                 Log.d("CameraXApp", msg)
                 Log.i("path", "${file.absolutePath}");
-                galleryAddPic()
+                //galleryAddPic()
                 viewFinder.post {
                     Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
                 }
@@ -241,6 +243,7 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
                     uploadFile(uploadFilePath, android_id) //  + "" + uploadFileName
                 }).start()
             }
+            /*
             @Suppress("DEPRECATION")
             private fun galleryAddPic() {
                 Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE).also { mediaScanIntent ->
@@ -248,7 +251,7 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
                     mediaScanIntent.data = Uri.fromFile(f)
                     sendBroadcast(mediaScanIntent)
                 }
-            }
+            }*/
         })
     }
 
@@ -396,10 +399,13 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
 
         findViewById<ImageButton>(R.id.capture_button).setOnClickListener {
             val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-            file = File(externalMediaDirs.first(),
-                "${timeStamp}.jpg")
-            uploadFileName = "$timeStamp.jpg"
-            takePicture()
+            if(count<6){
+                file = File(externalMediaDirs.first(),
+                    "$count.jpg")
+                uploadFileName = "$timeStamp.jpg"
+                takePicture()
+                count++
+            }
         }
 
         // Bind use cases to lifecycle
