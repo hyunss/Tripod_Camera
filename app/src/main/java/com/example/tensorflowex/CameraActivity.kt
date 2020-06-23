@@ -7,8 +7,8 @@ import android.bluetooth.BluetoothAdapter
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Matrix
-import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.provider.Settings
 import android.util.Log
 import android.util.Size
@@ -157,12 +157,17 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
 
                     }
                     val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-                    file = File(externalMediaDirs.first(),
+                    file = File(
+                        Environment.getExternalStorageDirectory(),
                         "$count.jpg"
                     )
                     uploadFileName = "$timeStamp.jpg"
                     takePicture()
                     setup()
+//                    if(count == 5){
+//                        val intent = Intent(baseContext, MainActivity::class.java)
+//                        startActivity(intent)
+//                    }
                     count++
                 }
             }
@@ -401,12 +406,17 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
         findViewById<ImageButton>(R.id.capture_button).setOnClickListener {
             val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
             if(count<6){
-                file = File(externalMediaDirs.first(),
+                file = File( Environment.getExternalStorageDirectory(),
                     "$count.jpg")
                 uploadFileName = "$timeStamp.jpg"
                 takePicture()
+                if(count == 5){
+                    val intent = Intent(baseContext, MainActivity::class.java)
+                    startActivity(intent)
+                }
                 count++
             }
+
         }
 
         // Bind use cases to lifecycle
