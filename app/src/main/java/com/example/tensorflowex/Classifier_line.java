@@ -78,23 +78,10 @@ public interface Classifier_line {
     @Override
     public String toString() {
       String resultString = "";
-      if (id != null) {
-        resultString += "[" + id + "] ";
-      }
 
-      if (title != null) {
-        resultString += title + " ";
-      }
+      resultString += confidence * 100.0f;
 
-      if (confidence != null) {
-        resultString += String.format("(%.1f%%) ", confidence * 100.0f);
-      }
-
-      if (location != null) {
-        resultString += location + " ";
-      }
-
-      return resultString.trim();
+      return title + "," + resultString;
     }
   }
 

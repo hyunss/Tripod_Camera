@@ -84,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
     private CheckBox checkBox5;
     private Button btnGallery;
     private Button savebtn;
+
     Bitmap bitmap0;
     Bitmap bitmap1;
     Bitmap bitmap2;
@@ -187,6 +188,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // 가져온 이미지를 텐서플로우로 넘기기
+    Bitmap[] bitmaps_result = new Bitmap[6];
+    double[] percent_result = new double[6];
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // 이미지피커에서 선택된 이미지를 텐서플로우로 넘깁니다.
@@ -344,6 +347,38 @@ public class MainActivity extends AppCompatActivity {
             recognize_bitmap4(bitmap4, bitmap_line4);
             recognize_bitmap5(bitmap5, bitmap_line5);
 
+            //good의 percent비교하여 오름차순 정렬
+            Bitmap tmp_b;
+            double tmp;
+            for(int i=0; i<6; i++){
+                for(int j=i+1; j<6; j++){
+                    if(percent_result[i] < percent_result[j]){
+                        tmp = percent_result[i];
+                        percent_result[i] = percent_result[j];
+                        percent_result[j] = tmp;
+
+                        tmp_b = bitmaps_result[i];
+                        bitmaps_result[i] = bitmaps_result[j];
+                        bitmaps_result[j] = tmp_b;
+
+                    }
+                }
+            }
+
+            imgResult0.setImageBitmap(bitmaps_result[0]);
+            imgResult1.setImageBitmap(bitmaps_result[1]);
+            imgResult2.setImageBitmap(bitmaps_result[2]);
+            imgResult3.setImageBitmap(bitmaps_result[3]);
+            imgResult4.setImageBitmap(bitmaps_result[4]);
+            imgResult5.setImageBitmap(bitmaps_result[5]);
+
+            txtResult0.setText("1:"+percent_result[0]);
+            txtResult1.setText("2:"+percent_result[1]);
+            txtResult2.setText("3:"+percent_result[2]);
+            txtResult3.setText("4:"+percent_result[3]);
+            txtResult4.setText("5:"+percent_result[4]);
+            txtResult5.setText("6:"+percent_result[5]);
+
             checkBox0 = (CheckBox) findViewById(R.id.check0);
             checkBox1 = (CheckBox) findViewById(R.id.check1);
             checkBox2 = (CheckBox) findViewById(R.id.check2);
@@ -377,10 +412,10 @@ public class MainActivity extends AppCompatActivity {
                 file_path = new File(string_path);
                 if(!file_path.isDirectory()){
                     file_path.mkdirs();
-                 }
-            FileOutputStream out = new FileOutputStream(string_path+file_name);
-            bitmap0.compress(Bitmap.CompressFormat.JPEG, 50, out);
-            out.close();
+                }
+                FileOutputStream out = new FileOutputStream(string_path+file_name);
+                bitmap0.compress(Bitmap.CompressFormat.JPEG, 50, out);
+                out.close();
                 sendBroadcast(new Intent( Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
                         Uri.parse("file://"+string_path+file_name)) );
 
@@ -488,73 +523,255 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     private void recognize_bitmap0(Bitmap bitmap, Bitmap bitmap_line) {
-
-        // 비트맵을 처음에 정의된 INPUT SIZE에 맞춰 스케일링 (상의 왜곡이 일어날수 있는데, 이건 나중에 따로 설명할게요)
         bitmap = Bitmap.createScaledBitmap(bitmap, INPUT_SIZE, INPUT_SIZE, false);
         bitmap_line = Bitmap.createScaledBitmap(bitmap_line, INPUT_SIZE, INPUT_SIZE, false);
-// classifier 의 recognizeImage 부분이 실제 inference 를 호출해서 인식작업을 하는 부분입니다.
         final List<Classifier.Recognition> results = classifier.recognizeImage(bitmap);
         final List<Classifier_line.Recognition> results_line = classifier_line.recognizeImage(bitmap_line);
+        String[] Results = results.toString().split(",");
+        String[] Results_line = results_line.toString().split(",");
 
-        // 결과값은 Classifier.Recognition 구조로 리턴되는데, 원래는 여기서 결과값을 배열로 추출가능하지만,
-        // 여기서는 간단하게 그냥 통째로 txtResult에 뿌려줍니다.
-        // imgResult에는 분석에 사용된 비트맵을 뿌려줍니다.
+        String a = "0";
+        String b = "0";
 
-        imgResult0.setImageBitmap(bitmap);
-        txtResult0.setText(results.toString());
-        txtResult_line0.setText(results_line.toString());
+        Results[0] = Results[0].substring(1);
+        Results_line[0] = Results_line[0].substring(1);
+
+        if(Results.length > 2){
+            Results[3] = Results[3].substring(0, Results[3].length()-1);
+        }
+        if(Results_line.length > 2){
+            Results_line[3] = Results_line[3].substring(0, Results_line[3].length()-1);
+        }
+
+        if(Results[0].equals("good")){
+            a = Results[1];
+        }
+        if(Results_line[0].equals("good")){
+            b = Results_line[1];
+        }
+
+        if(Results.length > 2){
+            if(Results[0].equals("bad")){
+                a = Results[3];
+            }
+        }
+        if(Results_line.length > 2){
+            if(Results_line[0].equals("bad")){
+                b = Results_line[3];
+            }
+        }
+
+        bitmaps_result[0] = bitmap;
+        percent_result[0] = 8*Double.parseDouble(a) + 2*Double.parseDouble(b);
     }
     private void recognize_bitmap1(Bitmap bitmap, Bitmap bitmap_line) {
         bitmap = Bitmap.createScaledBitmap(bitmap, INPUT_SIZE, INPUT_SIZE, false);
         bitmap_line = Bitmap.createScaledBitmap(bitmap_line, INPUT_SIZE, INPUT_SIZE, false);
         final List<Classifier.Recognition> results = classifier.recognizeImage(bitmap);
         final List<Classifier_line.Recognition> results_line = classifier_line.recognizeImage(bitmap_line);
-        imgResult1.setImageBitmap(bitmap);
-        txtResult1.setText(results.toString());
-        txtResult_line1.setText(results_line.toString());
+        String[] Results = results.toString().split(",");
+        String[] Results_line = results_line.toString().split(",");
+
+        String a = "0";
+        String b = "0";
+
+        Results[0] = Results[0].substring(1);
+        Results_line[0] = Results_line[0].substring(1);
+
+        if(Results.length > 2){
+            Results[3] = Results[3].substring(0, Results[3].length()-1);
+        }
+        if(Results_line.length > 2){
+            Results_line[3] = Results_line[3].substring(0, Results_line[3].length()-1);
+        }
+
+        if(Results[0].equals("good")){
+            a = Results[1];
+        }
+        if(Results_line[0].equals("good")){
+            b = Results_line[1];
+        }
+
+        if(Results.length > 2){
+            if(Results[0].equals("bad")){
+                a = Results[3];
+            }
+        }
+        if(Results_line.length > 2){
+            if(Results_line[0].equals("bad")){
+                b = Results_line[3];
+            }
+        }
+
+        bitmaps_result[1] = bitmap;
+        percent_result[1] = 8*Double.parseDouble(a) + 2*Double.parseDouble(b);
     }
     private void recognize_bitmap2(Bitmap bitmap, Bitmap bitmap_line) {
         bitmap = Bitmap.createScaledBitmap(bitmap, INPUT_SIZE, INPUT_SIZE, false);
         bitmap_line = Bitmap.createScaledBitmap(bitmap_line, INPUT_SIZE, INPUT_SIZE, false);
         final List<Classifier.Recognition> results = classifier.recognizeImage(bitmap);
         final List<Classifier_line.Recognition> results_line = classifier_line.recognizeImage(bitmap_line);
-        imgResult2.setImageBitmap(bitmap);
-        txtResult2.setText(results.toString());
-        txtResult_line2.setText(results_line.toString());
+        String[] Results = results.toString().split(",");
+        String[] Results_line = results_line.toString().split(",");
+
+        String a = "0";
+        String b = "0";
+
+        Results[0] = Results[0].substring(1);
+        Results_line[0] = Results_line[0].substring(1);
+
+        if(Results.length > 2){
+            Results[3] = Results[3].substring(0, Results[3].length()-1);
+        }
+        if(Results_line.length > 2){
+            Results_line[3] = Results_line[3].substring(0, Results_line[3].length()-1);
+        }
+
+        if(Results[0].equals("good")){
+            a = Results[1];
+        }
+        if(Results_line[0].equals("good")){
+            b = Results_line[1];
+        }
+
+        if(Results.length > 2){
+            if(Results[0].equals("bad")){
+                a = Results[3];
+            }
+        }
+        if(Results_line.length > 2){
+            if(Results_line[0].equals("bad")){
+                b = Results_line[3];
+            }
+        }
+
+        bitmaps_result[2] = bitmap;
+        percent_result[2] = 8*Double.parseDouble(a) + 2*Double.parseDouble(b);
     }
     private void recognize_bitmap3(Bitmap bitmap, Bitmap bitmap_line) {
-
-        // 비트맵을 처음에 정의된 INPUT SIZE에 맞춰 스케일링 (상의 왜곡이 일어날수 있는데, 이건 나중에 따로 설명할게요)
         bitmap = Bitmap.createScaledBitmap(bitmap, INPUT_SIZE, INPUT_SIZE, false);
         bitmap_line = Bitmap.createScaledBitmap(bitmap_line, INPUT_SIZE, INPUT_SIZE, false);
-// classifier 의 recognizeImage 부분이 실제 inference 를 호출해서 인식작업을 하는 부분입니다.
         final List<Classifier.Recognition> results = classifier.recognizeImage(bitmap);
         final List<Classifier_line.Recognition> results_line = classifier_line.recognizeImage(bitmap_line);
+        String[] Results = results.toString().split(",");
+        String[] Results_line = results_line.toString().split(",");
 
-        // 결과값은 Classifier.Recognition 구조로 리턴되는데, 원래는 여기서 결과값을 배열로 추출가능하지만,
-        // 여기서는 간단하게 그냥 통째로 txtResult에 뿌려줍니다.
-        // imgResult에는 분석에 사용된 비트맵을 뿌려줍니다.
+        String a = "0";
+        String b = "0";
 
-        imgResult3.setImageBitmap(bitmap);
-        txtResult3.setText(results.toString());
-        txtResult_line3.setText(results_line.toString());
+        Results[0] = Results[0].substring(1);
+        Results_line[0] = Results_line[0].substring(1);
+
+        if(Results.length > 2){
+            Results[3] = Results[3].substring(0, Results[3].length()-1);
+        }
+        if(Results_line.length > 2){
+            Results_line[3] = Results_line[3].substring(0, Results_line[3].length()-1);
+        }
+
+        if(Results[0].equals("good")){
+            a = Results[1];
+        }
+        if(Results_line[0].equals("good")){
+            b = Results_line[1];
+        }
+
+        if(Results.length > 2){
+            if(Results[0].equals("bad")){
+                a = Results[3];
+            }
+        }
+        if(Results_line.length > 2){
+            if(Results_line[0].equals("bad")){
+                b = Results_line[3];
+            }
+        }
+
+        bitmaps_result[3] = bitmap;
+        percent_result[3] = 8*Double.parseDouble(a) + 2*Double.parseDouble(b);
     }
     private void recognize_bitmap4(Bitmap bitmap, Bitmap bitmap_line) {
         bitmap = Bitmap.createScaledBitmap(bitmap, INPUT_SIZE, INPUT_SIZE, false);
         bitmap_line = Bitmap.createScaledBitmap(bitmap_line, INPUT_SIZE, INPUT_SIZE, false);
         final List<Classifier.Recognition> results = classifier.recognizeImage(bitmap);
         final List<Classifier_line.Recognition> results_line = classifier_line.recognizeImage(bitmap_line);
-        imgResult4.setImageBitmap(bitmap);
-        txtResult4.setText(results.toString());
-        txtResult_line4.setText(results_line.toString());
+        String[] Results = results.toString().split(",");
+        String[] Results_line = results_line.toString().split(",");
+
+        String a = "0";
+        String b = "0";
+
+        Results[0] = Results[0].substring(1);
+        Results_line[0] = Results_line[0].substring(1);
+
+        if(Results.length > 2){
+            Results[3] = Results[3].substring(0, Results[3].length()-1);
+        }
+        if(Results_line.length > 2){
+            Results_line[3] = Results_line[3].substring(0, Results_line[3].length()-1);
+        }
+
+        if(Results[0].equals("good")){
+            a = Results[1];
+        }
+        if(Results_line[0].equals("good")){
+            b = Results_line[1];
+        }
+
+        if(Results.length > 2){
+            if(Results[0].equals("bad")){
+                a = Results[3];
+            }
+        }
+        if(Results_line.length > 2){
+            if(Results_line[0].equals("bad")){
+                b = Results_line[3];
+            }
+        }
+
+        bitmaps_result[4] = bitmap;
+        percent_result[4] = 8*Double.parseDouble(a) + 2*Double.parseDouble(b);
     }
     private void recognize_bitmap5(Bitmap bitmap, Bitmap bitmap_line) {
         bitmap = Bitmap.createScaledBitmap(bitmap, INPUT_SIZE, INPUT_SIZE, false);
         bitmap_line = Bitmap.createScaledBitmap(bitmap_line, INPUT_SIZE, INPUT_SIZE, false);
         final List<Classifier.Recognition> results = classifier.recognizeImage(bitmap);
         final List<Classifier_line.Recognition> results_line = classifier_line.recognizeImage(bitmap_line);
-        imgResult5.setImageBitmap(bitmap);
-        txtResult5.setText(results.toString());
-        txtResult_line5.setText(results_line.toString());
+        String[] Results = results.toString().split(",");
+        String[] Results_line = results_line.toString().split(",");
+
+        String a = "0";
+        String b = "0";
+
+        Results[0] = Results[0].substring(1);
+        Results_line[0] = Results_line[0].substring(1);
+
+        if(Results.length > 2){
+            Results[3] = Results[3].substring(0, Results[3].length()-1);
+        }
+        if(Results_line.length > 2){
+            Results_line[3] = Results_line[3].substring(0, Results_line[3].length()-1);
+        }
+
+        if(Results[0].equals("good")){
+            a = Results[1];
+        }
+        if(Results_line[0].equals("good")){
+            b = Results_line[1];
+        }
+
+        if(Results.length > 2){
+            if(Results[0].equals("bad")){
+                a = Results[3];
+            }
+        }
+        if(Results_line.length > 2){
+            if(Results_line[0].equals("bad")){
+                b = Results_line[3];
+            }
+        }
+
+        bitmaps_result[5] = bitmap;
+        percent_result[5] = 8*Double.parseDouble(a) + 2*Double.parseDouble(b);
     }
 }
