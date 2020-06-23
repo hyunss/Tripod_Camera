@@ -275,6 +275,7 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
                 "uploadFile",
                 "Source File not exist :" + uploadFilePath //  + "" + uploadFileName
             )
+
             runOnUiThread {
                 //messageText!!.text = "Source File not exist :$uploadFilePath" + uploadFileName
             }
