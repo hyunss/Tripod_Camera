@@ -9,6 +9,7 @@ import android.content.pm.PackageManager
 import android.graphics.Matrix
 import android.os.Bundle
 import android.os.Environment
+import android.os.Handler
 import android.provider.Settings
 import android.util.Log
 import android.util.Size
@@ -51,8 +52,8 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
     lateinit var android_id:String
 
     /**********  File Path  *************/
-    lateinit var uploadFilePath:String // "/mnt/sdcard/DCIM/Camera/"
-    var uploadFileName:String? = null // "20200520_155136.jpg"
+    val uploadFilePath = Environment.getExternalStorageDirectory().toString() // "/mnt/sdcard/DCIM/Camera/"
+    var uploadFileName: MutableList<String> = ArrayList() // "20200520_155136.jpg"
 
     private lateinit var file : File
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,28 +71,21 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
         messageText!!.text = android_id
 
         /************* Php script path ****************/
-        upLoadServerUri = "http://192.168.25.11/project/upload.php"
+        upLoadServerUri = "http://192.168.112.94/project/upload.php"
+        // "http://192.168.25.11/project/upload.php"
         // "http://192.168.112.38/project/upload.php";
 
-        // Request permission from the user
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_NETWORK_STATE
-            ) == PackageManager.PERMISSION_DENIED
-        ) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.ACCESS_NETWORK_STATE),
-                0
-            )
-        }
-
         // Request camera permissions
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NETWORK_STATE) == PackageManager.PERMISSION_DENIED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_NETWORK_STATE), 0)
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 0)
+        }
         if (allPermissionsGranted()) {
             viewFinder.post { startCamera() }
         } else {
-            ActivityCompat.requestPermissions(
-                    this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
+            ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
         }
 
         // Every time the provided texture view changes, recompute layout
@@ -156,18 +150,31 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
                         updateTransform()
 
                     }
-                    val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+
                     file = File(
                         Environment.getExternalStorageDirectory(),
                         "$count.jpg"
                     )
-                    uploadFileName = "$timeStamp.jpg"
                     takePicture()
                     setup()
-//                    if(count == 5){
-//                        val intent = Intent(baseContext, MainActivity::class.java)
-//                        startActivity(intent)
-//                    }
+
+                    val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+                    uploadFileName.add(count, "$timeStamp.jpg")
+
+                    if(count == 5){
+                        dialog = ProgressDialog.show(this, "", "Uploading file...", true)
+
+                        Thread(Runnable {
+                            runOnUiThread { messageText!!.text = "uploading started....." }
+                            for (i in 0..5) {
+                                Log.i("uploadfilearray", uploadFilePath + "/" + uploadFileName[i])
+                                uploadFile(i, uploadFilePath + "/" + uploadFileName[i], android_id)
+                            }
+                        }).start()
+
+//                    val intent = Intent(baseContext, MainActivity::class.java)
+//                    startActivity(intent)
+                    }
                     count++
                 }
             }
@@ -218,9 +225,7 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
     // Build the image capture use case and attach button click listener
     val imageCapture = ImageCapture(imageCaptureConfig)
 
-    fun takePicture(){ //uploadFileName: String
-        dialog = ProgressDialog.show(this, "", "Uploading file...", true)
-
+    fun takePicture() {
         imageCapture.takePicture(file, executor,
         object : ImageCapture.OnImageSavedListener {
             override fun onError(
@@ -237,16 +242,10 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
             override fun onImageSaved(file: File) {
                 val msg = "Photo capture succeeded: ${file.absolutePath}"
                 Log.d("CameraXApp", msg)
-                Log.i("path", "${file.absolutePath}");
                 //galleryAddPic()
                 viewFinder.post {
                     Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
                 }
-                uploadFilePath = "${file.absolutePath}"
-                Thread(Runnable {
-                    //runOnUiThread { messageText!!.text = "uploading started....." }
-                    uploadFile(uploadFilePath, android_id) //  + "" + uploadFileName
-                }).start()
             }
             /*
             @Suppress("DEPRECATION")
@@ -260,7 +259,7 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
         })
     }
 
-    fun uploadFile(sourceFileUri: String, androidId: String): Int {
+    fun uploadFile(i: Int, sourceFileUri: String, androidId: String): Int {
         var conn: HttpURLConnection? = null
         var dos: DataOutputStream? = null
         val lineEnd = "\r\n"
@@ -272,17 +271,17 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
         val buffer: ByteArray
         val maxBufferSize = 1 * 1024 * 1024
 
-        val sourceFile = File(sourceFileUri)
+        val sourceFile = File(uploadFilePath+"/"+i+".jpg")
 
         return if (!sourceFile.isFile) {
             dialog!!.dismiss()
             Log.e(
                 "uploadFile",
-                "Source File not exist :" + uploadFilePath //  + "" + uploadFileName
+                "Source File not exist :" + uploadFilePath + "/" + i + ".jpg"
             )
 
             runOnUiThread {
-                //messageText!!.text = "Source File not exist :$uploadFilePath" + uploadFileName
+                //messageText!!.text = "Source File not exist :$uploadFilePath" + "/" + uploadFileName[i]
             }
             0
         } else {
@@ -345,7 +344,9 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
                     runOnUiThread {
                         val msg =
                             "File Upload Completed.\n\n See uploaded file here : \n\n " +
-                                    "http://192.168.25.11/project/uploads/${uploadFileName}"
+                                    "http://192.168.112.94/project/uploads/${uploadFileName[i]}"
+                                    // "http://192.168.25.11/project/uploads/${uploadFileName[i]}"
+
 //                        messageText!!.text = msg
                         Toast.makeText(
                             this,
@@ -404,16 +405,33 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
         }
 
         findViewById<ImageButton>(R.id.capture_button).setOnClickListener {
-            val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
             if(count<6){
                 file = File( Environment.getExternalStorageDirectory(),
                     "$count.jpg")
-                uploadFileName = "$timeStamp.jpg"
                 takePicture()
+
+                val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+                uploadFileName.add(count, "$timeStamp.jpg")
+
                 if(count == 5){
-                    val intent = Intent(baseContext, MainActivity::class.java)
-                    startActivity(intent)
+                    dialog = ProgressDialog.show(this, "", "Uploading file...", true)
+
+                    Thread(Runnable {
+                        //runOnUiThread { messageText!!.text = "uploading started....." }
+                        for (i in 0..5) {
+                            Log.i("uploadfilearray", uploadFilePath + "/" + uploadFileName[i])
+                            uploadFile(i, uploadFilePath + "/" + uploadFileName[i], android_id)
+                        }
+                    }).start()
+
+                    val mHandler = Handler()
+                    mHandler.postDelayed(Runnable {
+                        // 시간 지난 후 실행할 코딩
+                        val intent = Intent(baseContext, MainActivity::class.java)
+                        startActivity(intent)
+                    }, 300) // 5초후
                 }
+
                 count++
             }
 
