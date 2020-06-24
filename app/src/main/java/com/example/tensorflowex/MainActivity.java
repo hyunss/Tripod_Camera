@@ -34,6 +34,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -140,9 +142,12 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-
-
-
+        try {
+            Thread.sleep(5000);
+            bit();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
     }
 
