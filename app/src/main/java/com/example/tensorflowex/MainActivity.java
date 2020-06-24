@@ -9,12 +9,16 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.text.style.LeadingMarginSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -76,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
     private CheckBox checkBox3;
     private CheckBox checkBox4;
     private CheckBox checkBox5;
-    private Button savebtn;
+    private ImageButton savebtn;
 
     Bitmap bitmap0;
     Bitmap bitmap1;
@@ -121,7 +125,16 @@ public class MainActivity extends AppCompatActivity {
         imgResult5 = (ImageView)findViewById(R.id.imgResult5);
         txtResult5 = (TextView) findViewById(R.id.txtResult5);
 
-        savebtn = (Button) findViewById(R.id.saveBtn);
+        savebtn = (ImageButton) findViewById(R.id.saveBtn);
+
+
+        checkBox0 = (CheckBox) findViewById(R.id.check0);
+        checkBox1 = (CheckBox) findViewById(R.id.check1);
+        checkBox2 = (CheckBox) findViewById(R.id.check2);
+        checkBox3 = (CheckBox) findViewById(R.id.check3);
+        checkBox4 = (CheckBox) findViewById(R.id.check4);
+        checkBox5 = (CheckBox) findViewById(R.id.check5);
+
 
         //텐서플로우 초기화 및 그래프파일 메모리에 탑재
         initTensorFlowAndLoadModel();
@@ -137,12 +150,12 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        try {
-            Thread.sleep(5000);
-            bit();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            Thread.sleep(5000);
+//            bit();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
 
     }
 
@@ -184,11 +197,28 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void GallaryOnClick(View view) {
-       // LoadImageFromGallery();
+        ImageButton btnGallery = (ImageButton)findViewById(R.id.btnGallery);
+        btnGallery.setVisibility(View.GONE);
         bit();
+       // LoadImageFromGallery();
+        //LinearLayout chl = (LinearLayout)findViewById(R.id.chLinear);
+        CheckBox ch0 = (CheckBox)findViewById(R.id.check0);
+        CheckBox ch1 = (CheckBox)findViewById(R.id.check1);
+        CheckBox ch2 = (CheckBox)findViewById(R.id.check2);
+        CheckBox ch3 = (CheckBox)findViewById(R.id.check3);
+        CheckBox ch4 = (CheckBox)findViewById(R.id.check4);
+        CheckBox ch5 = (CheckBox)findViewById(R.id.check5);
+        ch0.setVisibility(View.VISIBLE);
+        ch1.setVisibility(View.VISIBLE);
+        ch2.setVisibility(View.VISIBLE);
+        ch3.setVisibility(View.VISIBLE);
+        ch4.setVisibility(View.VISIBLE);
+        ch5.setVisibility(View.VISIBLE);
+
     }
 
     public void bit(){
+
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inSampleSize = 8;
 
@@ -361,23 +391,21 @@ public class MainActivity extends AppCompatActivity {
         imgResult4.setImageBitmap(bitmaps_result[4]);
         imgResult5.setImageBitmap(bitmaps_result[5]);
 
-        txtResult0.setText("(1)"+percent_result[0]);
-        txtResult1.setText("(2)"+percent_result[1]);
-        txtResult2.setText("(3)"+percent_result[2]);
-        txtResult3.setText("(4)"+percent_result[3]);
-        txtResult4.setText("(5)"+percent_result[4]);
-        txtResult5.setText("(6)"+percent_result[5]);
+        txtResult0.setText(""+Math.round(percent_result[0] * 100) / 100.0);
+        txtResult1.setText(""+Math.round(percent_result[1] * 100) / 100.0);
+        txtResult2.setText(""+Math.round(percent_result[2] * 100) / 100.0);
+        txtResult3.setText(""+Math.round(percent_result[3] * 100) / 100.0);
+        txtResult4.setText(""+Math.round(percent_result[4] * 100) / 100.0);
+        txtResult5.setText(""+Math.round(percent_result[5] * 100) / 100.0);
 
-        checkBox0 = (CheckBox) findViewById(R.id.check0);
-        checkBox1 = (CheckBox) findViewById(R.id.check1);
-        checkBox2 = (CheckBox) findViewById(R.id.check2);
-        checkBox3 = (CheckBox) findViewById(R.id.check3);
-        checkBox4 = (CheckBox) findViewById(R.id.check4);
-        checkBox5 = (CheckBox) findViewById(R.id.check5);
+
+
 
         savebtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Toast toast = Toast.makeText(getApplicationContext(), "갤러리 저장 완료", Toast.LENGTH_LONG);
+                toast.show();
                 saveImage();
             }
         });
@@ -396,6 +424,7 @@ public class MainActivity extends AppCompatActivity {
         String string_path = ex_storage+foler_name;
         File file_path;
         if(checkBox0.isChecked()){
+
             try{
                 file_name = count++ +".jpg";
                 file_path = new File(string_path);
@@ -416,6 +445,7 @@ public class MainActivity extends AppCompatActivity {
 
         }
         if(checkBox1.isChecked()){
+
             try{
                 file_name = count++ +".jpg";
                 file_path = new File(string_path);
@@ -435,6 +465,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         if(checkBox2.isChecked()){
+
             try{
                 file_name = count++ +".jpg";
                 file_path = new File(string_path);
@@ -454,6 +485,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         if(checkBox3.isChecked()){
+
             try{
                 file_name = count++ +".jpg";
                 file_path = new File(string_path);
@@ -473,6 +505,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         if(checkBox4.isChecked()){
+
             try{
                 file_name = count++ +".jpg";
                 file_path = new File(string_path);
@@ -492,6 +525,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         if(checkBox5.isChecked()){
+
             try{
                 file_name = count++ +".jpg";
                 file_path = new File(string_path);

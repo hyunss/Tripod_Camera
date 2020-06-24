@@ -348,11 +348,11 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
                                      "http://192.168.25.11/project/uploads/${uploadFileName[i]}"
 
 //                        messageText!!.text = msg
-                        Toast.makeText(
-                            this,
-                            "File Upload Complete.",
-                            Toast.LENGTH_SHORT
-                        ).show()
+//                        Toast.makeText(
+//                            this,
+//                            "File Upload Complete.",
+//                            Toast.LENGTH_SHORT
+//                        ).show()
                     }
                 }
 
