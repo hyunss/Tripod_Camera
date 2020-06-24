@@ -137,7 +137,7 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
         }
 
         bt.setOnDataReceivedListener { _, message -> //데이터 수신
-            if(count<6){
+            if(count < 6){
                 if(message == "1"){
                     preview.setOnPreviewOutputUpdateListener {
 
@@ -151,10 +151,7 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
 
                     }
 
-                    file = File(
-                        Environment.getExternalStorageDirectory(),
-                        "$count.jpg"
-                    )
+                    file = File(Environment.getExternalStorageDirectory(), "$count.jpg")
                     takePicture()
                     setup()
 
@@ -165,16 +162,21 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
                         dialog = ProgressDialog.show(this, "", "Uploading file...", true)
 
                         Thread(Runnable {
-                            runOnUiThread { messageText!!.text = "uploading started....." }
+                            //runOnUiThread { messageText!!.text = "uploading started....." }
                             for (i in 0..5) {
                                 Log.i("uploadfilearray", uploadFilePath + "/" + uploadFileName[i])
                                 uploadFile(i, uploadFilePath + "/" + uploadFileName[i], android_id)
                             }
                         }).start()
 
-//                    val intent = Intent(baseContext, MainActivity::class.java)
-//                    startActivity(intent)
+                        val mHandler = Handler()
+                        mHandler.postDelayed(Runnable {
+                            // 시간 지난 후 실행할 코딩
+                            val intent = Intent(baseContext, MainActivity::class.java)
+                            startActivity(intent)
+                        }, 300) // 5초후
                     }
+
                     count++
                 }
             }
@@ -405,9 +407,8 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
         }
 
         findViewById<ImageButton>(R.id.capture_button).setOnClickListener {
-            if(count<6){
-                file = File( Environment.getExternalStorageDirectory(),
-                    "$count.jpg")
+            if(count < 6){
+                file = File(Environment.getExternalStorageDirectory(), "$count.jpg")
                 takePicture()
 
                 val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
