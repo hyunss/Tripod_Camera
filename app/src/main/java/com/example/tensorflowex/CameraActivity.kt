@@ -71,9 +71,7 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
         messageText!!.text = android_id
 
         /************* Php script path ****************/
-        upLoadServerUri = "http://192.168.112.94/project/upload.php"
-        // "http://192.168.25.11/project/upload.php"
-        // "http://192.168.112.38/project/upload.php";
+        upLoadServerUri = "http://192.168.25.11/project/upload.php"
 
         // Request camera permissions
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NETWORK_STATE) == PackageManager.PERMISSION_DENIED) {
@@ -306,6 +304,7 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
 
                 dos = DataOutputStream(conn.outputStream)
 
+
                 dos.writeBytes(twoHyphens + boundary + lineEnd)
                 dos.writeBytes("Content-Disposition: form-data; name=\'img_owner\'$lineEnd")
                 dos.writeBytes(lineEnd)
@@ -346,8 +345,7 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner{
                     runOnUiThread {
                         val msg =
                             "File Upload Completed.\n\n See uploaded file here : \n\n " +
-                                    "http://192.168.112.94/project/uploads/${uploadFileName[i]}"
-                                    // "http://192.168.25.11/project/uploads/${uploadFileName[i]}"
+                                     "http://192.168.25.11/project/uploads/${uploadFileName[i]}"
 
 //                        messageText!!.text = msg
                         Toast.makeText(
