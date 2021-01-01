@@ -270,4 +270,4 @@ Bluetooth SPP 라이브러리를 사용해 삼각대에 달린 아두이노와 �
 <img src = "https://user-images.githubusercontent.com/41332126/103403462-8810a500-4b93-11eb-9cdf-1b3a81941000.png" width="200px">
 <br><br>
 
-[![결과2](https://img.youtube.com/vi/cFraCrZCjkM/0.jpg)](https://www.youtube.com/watch?v=cFraCrZCjkM)
+[![클릭하면 유튜브로 이동](https://img.youtube.com/vi/UlWEPGqljLQ/0.jpg)](https://youtu.be/UlWEPGqljLQ)
