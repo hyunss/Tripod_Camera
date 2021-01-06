@@ -34,12 +34,13 @@
 <br>
 
 ## 작동 방법
+<img src = "https://user-images.githubusercontent.com/41332126/103402722-f011bc00-4b90-11eb-83c6-33989e6d5c0f.png" width="200px" align="right">
+
 1. 사진 촬영 시작(블루투스 리모컨)
 2. 모터가 여러 각도로 회전한다.
 3. 모터의 각도 변경에 맞추어 앱과 블루투스 통신하여 카메라가 연속 촬영한다.
 4. 촬영된 사진들을 내림차순으로 정렬하여 추천해준다.
 5. 사용자는 전체 저장하거나 혹은 원하는 사진들을 선택하여 부분 저장할 수 있다.
-<img src = "https://user-images.githubusercontent.com/41332126/103402722-f011bc00-4b90-11eb-83c6-33989e6d5c0f.png" width="200px" align="right">
 
 <br><br>
 
@@ -140,13 +141,11 @@
   <br><br>
 
 ## 아두이노와 블루투스 통신
-
+<img src = "https://user-images.githubusercontent.com/41332126/103398610-cfda0100-4b80-11eb-9b30-3897ef2eea78.png" width="220px" align="right">
 Bluetooth SPP 라이브러리를 사용해 삼각대에 달린 아두이노와 블루투스 연결을 하여 통신한다.
 - 안드로이드와 아두이노 통신으로 데이터를 안드로이드에서 아두이노로 보낸 후 모터를 작동시킨다.
 - 모터 작동이 끝난 후 아두이노에서 다시 안드로이드로 데이터를 보내고<br>
   안드로이드에서 자동으로 사진 촬영이 이루어져 연속 촬영 및 모터 구동을 구현하였다.
-
-  <img src = "https://user-images.githubusercontent.com/41332126/103398610-cfda0100-4b80-11eb-9b30-3897ef2eea78.png" width="220px">
   <br><br>
 
 ## 사용 부품과 연결도
