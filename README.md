@@ -31,19 +31,14 @@
   ## 🤷‍♀️
   - 잘 나온 사진을 구분하는 것이 어렵고
   - 분류하는 데에 상당 시간이 소요된다.
+<br>
 
 ## 작동 방법
-
 1. 사진 촬영 시작(블루투스 리모컨)
-
 2. 모터가 여러 각도로 회전한다.
-
 3. 모터의 각도 변경에 맞추어 앱과 블루투스 통신하여 카메라가 연속 촬영한다.
-
 4. 촬영된 사진들을 내림차순으로 정렬하여 추천해준다.
-
 5. 사용자는 전체 저장하거나 혹은 원하는 사진들을 선택하여 부분 저장할 수 있다.
-
 <img src = "https://user-images.githubusercontent.com/41332126/103402722-f011bc00-4b90-11eb-83c6-33989e6d5c0f.png" width="200px">
 
 <br><br>
@@ -78,7 +73,7 @@
 `Inception v3 Neural Networks의 Architecture`
 
 <img src = "https://user-images.githubusercontent.com/41332126/103403125-7d094500-4b92-11eb-96e6-2dadd70cbc97.png" height="200px">
-<br><br>
+<br>
 
 ## 데이터셋 클래스 분류
 
@@ -87,7 +82,7 @@
 약 4000개씩 jpg(jpeg)로 저장하여 원본 dataset을 만들었다.
 
 <img src = "https://user-images.githubusercontent.com/41332126/103395748-1a548100-4b73-11eb-85ca-96d06144d8ce.png" width="350px">
-<br><br>
+<br>
 
 ## 데이터셋 직선 성분 추출
 
@@ -96,10 +91,10 @@
 
 `👇 추출한 직선 성분 중 good 데이터셋 일부`
 
-<img src = "https://user-images.githubusercontent.com/41332126/103396072-6d7b0380-4b74-11eb-8b3e-bfa7e98a9a16.png" width="200px">
-<img src = "https://user-images.githubusercontent.com/41332126/103396116-93a0a380-4b74-11eb-8401-b50a7803f058.png" width="200px">
+<img src = "https://user-images.githubusercontent.com/41332126/103396072-6d7b0380-4b74-11eb-8b3e-bfa7e98a9a16.png" width="200px" align="left">
+<img src = "https://user-images.githubusercontent.com/41332126/103396116-93a0a380-4b74-11eb-8401-b50a7803f058.png" width="200px" align="left">
 <img src = "https://user-images.githubusercontent.com/41332126/103396120-9b604800-4b74-11eb-8cff-35ae4ff55167.png" width="200px">
-<br><br>
+<br>
 
 ## App과 OpenCV 연동
 
@@ -113,15 +108,13 @@
 👇 직선 성분 학습 그래프를 이용한 분류 결과를 도출 시 사용
 
 <img src = "https://user-images.githubusercontent.com/41332126/103397717-debeb480-4b7c-11eb-9ab8-8081752c3ffd.png" width="700px">
-<br><br>
 
 ## App과 학습 데이터 접목
 
 총 2종류의 Dataset을 tensorflow로 각각 학습 시킨 후, 모바일에 최적화 시킨<br>
 원본 이미지 학습 그래프와 직선 성분 학습 그래프를 안드로이드 앱에 적용한 결과.
 
-<img src = "https://user-images.githubusercontent.com/41332126/103396325-e62e8f80-4b75-11eb-863a-71024129b8ef.png" width="500px">
-<br><br>
+<img src = "https://user-images.githubusercontent.com/41332126/103396325-e62e8f80-4b75-11eb-863a-71024129b8ef.png" width="500px"><br>
 
 ## 결과 컨볼루션
 
@@ -149,7 +142,6 @@
 ## 아두이노와 블루투스 통신
 
 Bluetooth SPP 라이브러리를 사용해 삼각대에 달린 아두이노와 블루투스 연결을 하여 통신한다.
-
 - 안드로이드와 아두이노 통신으로 데이터를 안드로이드에서 아두이노로 보낸 후 모터를 작동시킨다.
 - 모터 작동이 끝난 후 아두이노에서 다시 안드로이드로 데이터를 보내고<br>
   안드로이드에서 자동으로 사진 촬영이 이루어져 연속 촬영 및 모터 구동을 구현하였다.
@@ -170,7 +162,7 @@ Bluetooth SPP 라이브러리를 사용해 삼각대에 달린 아두이노와 �
 | 스텝모터 드라이버 | 스텝모터와 아두이노 연결 |
 | 9V 건전지 | 모터 회전을 위한 전력 공급 |
 <br>
-<img src = "https://user-images.githubusercontent.com/41332126/103398748-5bec2880-4b81-11eb-8af7-3e81c2345515.png" width="500px">
+<img src = "https://user-images.githubusercontent.com/41332126/103398748-5bec2880-4b81-11eb-8af7-3e81c2345515.png" width="500px" align="left">
 <img src = "https://user-images.githubusercontent.com/41332126/103398757-64446380-4b81-11eb-8b98-e13976176566.png" width="300px">
 <br><br>
 
@@ -180,7 +172,7 @@ Bluetooth SPP 라이브러리를 사용해 삼각대에 달린 아두이노와 �
 
 70도, 80도, 90도 3번 촬영 후, 스텝모터가 작동하여 높이 조절한 뒤에 다시 70도, 80도, 90도 차례로 회전하며 촬영된다.
 
-<img src = "https://user-images.githubusercontent.com/41332126/103398914-006e6a80-4b82-11eb-9967-d4fdfdfc5103.png" width="230px"><br>
+<img src = "https://user-images.githubusercontent.com/41332126/103398914-006e6a80-4b82-11eb-9967-d4fdfdfc5103.png" width="230px" align="left">
 <img src = "https://user-images.githubusercontent.com/41332126/103398925-095f3c00-4b82-11eb-93a3-58856e66a9cf.png" width="290px">
 <br><br>
 
@@ -193,7 +185,7 @@ Bluetooth SPP 라이브러리를 사용해 삼각대에 달린 아두이노와 �
 - turn_up 👉 반시계방향 회전
 - turn_down 👉 시계방향 회전
 
-<img src = "https://user-images.githubusercontent.com/41332126/103399028-85598400-4b82-11eb-9423-f70b740bffc4.png" width="201px">
+<img src = "https://user-images.githubusercontent.com/41332126/103399028-85598400-4b82-11eb-9423-f70b740bffc4.png" width="201px" align="left">
 <img src = "https://user-images.githubusercontent.com/41332126/103399037-8e4a5580-4b82-11eb-9b64-d6158d2f5d15.png" width="210px">
 
 <br><br>
@@ -261,12 +253,9 @@ Bluetooth SPP 라이브러리를 사용해 삼각대에 달린 아두이노와 �
 
 # 3. 작품 사진 및 동작 결과
 
-<img src = "https://user-images.githubusercontent.com/41332126/103403421-5a2b6080-4b93-11eb-846e-ee23b9836cfc.png" width="200px">
-&nbsp;
-<img src = "https://user-images.githubusercontent.com/41332126/103403344-19cbe280-4b93-11eb-9934-e9fbecf655b6.png" width="200px">
-&nbsp;
-<img src = "https://user-images.githubusercontent.com/41332126/103403450-79c28900-4b93-11eb-8f9a-61b9b9f2163a.png" width="200px">
-&nbsp;
+<img src = "https://user-images.githubusercontent.com/41332126/103403421-5a2b6080-4b93-11eb-846e-ee23b9836cfc.png" width="200px" align="left">
+<img src = "https://user-images.githubusercontent.com/41332126/103403344-19cbe280-4b93-11eb-9934-e9fbecf655b6.png" width="200px" align="left">
+<img src = "https://user-images.githubusercontent.com/41332126/103403450-79c28900-4b93-11eb-8f9a-61b9b9f2163a.png" width="200px" align="left">
 <img src = "https://user-images.githubusercontent.com/41332126/103403462-8810a500-4b93-11eb-9cdf-1b3a81941000.png" width="200px">
 <br><br>
 
