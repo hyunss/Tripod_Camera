@@ -147,6 +147,8 @@ Bluetooth SPP 라이브러리를 사용해 삼각대에 달린 아두이노와 �
 - 안드로이드와 아두이노 통신으로 데이터를 안드로이드에서 아두이노로 보낸 후 모터를 작동시킨다.
 - 모터 작동이 끝난 후 아두이노에서 다시 안드로이드로 데이터를 보내고<br>
   안드로이드에서 자동으로 사진 촬영이 이루어져 연속 촬영 및 모터 구동을 구현하였다.
+  
+  
   <br><br>
 
 ## 사용 부품과 연결도
@@ -164,6 +166,7 @@ Bluetooth SPP 라이브러리를 사용해 삼각대에 달린 아두이노와 �
 <br>
 <img src = "https://user-images.githubusercontent.com/41332126/103398748-5bec2880-4b81-11eb-8af7-3e81c2345515.png" width="500px" align="left">
 <img src = "https://user-images.githubusercontent.com/41332126/103398757-64446380-4b81-11eb-8b98-e13976176566.png" width="300px">
+
 <br><br>
 
 ## 블루투스&모터 제어
@@ -174,6 +177,7 @@ Bluetooth SPP 라이브러리를 사용해 삼각대에 달린 아두이노와 �
 
 <img src = "https://user-images.githubusercontent.com/41332126/103398914-006e6a80-4b82-11eb-9967-d4fdfdfc5103.png" width="230px" align="left">
 <img src = "https://user-images.githubusercontent.com/41332126/103398925-095f3c00-4b82-11eb-93a3-58856e66a9cf.png" width="290px">
+
 <br><br>
 
 ## 스텝모터 제어
