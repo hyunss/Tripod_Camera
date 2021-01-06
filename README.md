@@ -39,7 +39,7 @@
 3. 모터의 각도 변경에 맞추어 앱과 블루투스 통신하여 카메라가 연속 촬영한다.
 4. 촬영된 사진들을 내림차순으로 정렬하여 추천해준다.
 5. 사용자는 전체 저장하거나 혹은 원하는 사진들을 선택하여 부분 저장할 수 있다.
-<img src = "https://user-images.githubusercontent.com/41332126/103402722-f011bc00-4b90-11eb-83c6-33989e6d5c0f.png" width="200px">
+<img src = "https://user-images.githubusercontent.com/41332126/103402722-f011bc00-4b90-11eb-83c6-33989e6d5c0f.png" width="200px" align="right">
 
 <br><br>
 
