@@ -142,6 +142,7 @@
 
 ## 아두이노와 블루투스 통신
 <img src = "https://user-images.githubusercontent.com/41332126/103398610-cfda0100-4b80-11eb-9b30-3897ef2eea78.png" width="220px" align="right">
+
 Bluetooth SPP 라이브러리를 사용해 삼각대에 달린 아두이노와 블루투스 연결을 하여 통신한다.
 - 안드로이드와 아두이노 통신으로 데이터를 안드로이드에서 아두이노로 보낸 후 모터를 작동시킨다.
 - 모터 작동이 끝난 후 아두이노에서 다시 안드로이드로 데이터를 보내고<br>
